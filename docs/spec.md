@@ -1,6 +1,8 @@
 <!-- Generated from spec.mdx + spec-config.ts | version: alpha -->
 <!-- Do not edit directly. Run `bun run spec:gen` to regenerate. -->
 
+<!-- Modified by cateyelow in 2026 for the landing fork: add fonts and direction to the generated specification. -->
+
 # DESIGN.md Format
 
 DESIGN.md is a self-contained, plain-text representation of a design system. It defines the visual identity of a brand and product, thereby ensuring that these stylistic choices can be followed across design sessions and between different AI agents and tools.  As a human-readable, open-format document, it serves as a living source of truth that both humans and AI can understand and refine.
@@ -45,6 +47,10 @@ version: <string>          # optional, current version: "alpha"
 name: <string>
 description: <string>      # optional
 omitted: <string[]|OmittedSection[]> # optional
+fonts:
+  <token-name>: <Font metadata> # optional top-level map
+direction:
+  <field>: <string>            # optional top-level map, extensible
 colors:
   <token-name>: <Color>
 typography:
@@ -83,6 +89,30 @@ Hex notation (`#RRGGBB`) remains the recommended default for simplicity and broa
   [`font-variation-settings`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/font-variation-settings).
 
 **Dimension**: A dimension value is a string with a unit suffix. Valid units are: px, em, rem.
+
+**Fonts**: The optional top-level `fonts` key is a map of token names to font metadata objects.
+
+- `family` (string, required): CSS family name used in `typography.fontFamily`.
+- `source` (string, required): URL of the official font distribution.
+- `license` (string, required): for example `OFL-1.1`, `Custom commercial-free`, or `Proprietary`.
+- `licenseUrl` (string, optional): URL of the license text.
+- `webEmbedding` (boolean, required): whether the license allows website `@font-face` embedding.
+- `verified` (string, required): real calendar date in `YYYY-MM-DD` when the license was checked.
+- `files` (list, optional): objects with required `path: string`; optional `weight: number | string` (e.g. `400` or `100 900`), `style: normal | italic`, and `format: woff2 | woff | truetype | opentype`.
+- `display` (optional): `auto | block | swap | fallback | optional`.
+- `unicodeRange` (string, optional): CSS unicode range.
+- `fallback` (string, optional): CSS fallback stack.
+
+Malformed values are reported as findings. Missing or invalid verification dates are warnings. The `css-fonts` exporter emits one `@font-face` per file, defaults to weight `400`, style `normal`, and display `swap`, and infers formats from `.woff2`, `.woff`, `.ttf`, and `.otf` extensions. An explicit format overrides inference; an unknown extension without a format emits only `url()`. Paths are preserved. Entries with `webEmbedding: false` produce a skip comment and no CSS variable; malformed entries are skipped. Other valid entries produce `--font-<token>` variables in `:root`.
+
+**Direction**: The optional top-level `direction` key is a map of strings recording per-project art direction.
+
+- Known fields: `narrative`, `world`, `layout`, `type`, `color`, `image`, `density`, `motion`, `tone`, `reason`, `differs`.
+- Additional sub-keys are allowed; every value must be a string.
+
+When direction exists, missing or empty narrative, layout, and image fields produce warnings. Malformed maps and non-string values also produce warnings. Use direction.type to explain intentional default typefaces by family name.
+
+Unknown top-level keys remain allowed for project-specific extensions.
 
 **Omitted**: An array of sections that are intentionally omitted from the design system. This suppresses linter warnings for missing sections (e.g. colors, typography, spacing, rounded, components). Each entry can be:
 

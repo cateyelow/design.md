@@ -1,4 +1,5 @@
 // Copyright 2026 Google LLC
+// Modified by cateyelow in 2026 for the landing fork: add the css-fonts export format.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,15 +16,16 @@
 import { defineCommand } from 'citty';
 import { lint, TailwindEmitterHandler, TailwindV4EmitterHandler, serializeTailwindV4, CssVarsEmitterHandler, serializeCssVars } from '../linter/index.js';
 import { DtcgEmitterHandler } from '../linter/dtcg/handler.js';
+import { CssFontsEmitterHandler } from '../linter/css-fonts/handler.js';
 import { readInput, FileReadError } from '../utils.js';
 
-const FORMATS = ['css-tailwind', 'json-tailwind', 'tailwind', 'dtcg', 'css-vars'] as const;
+const FORMATS = ['css-tailwind', 'json-tailwind', 'tailwind', 'dtcg', 'css-vars', 'css-fonts'] as const;
 type ExportFormat = typeof FORMATS[number];
 
 export default defineCommand({
   meta: {
     name: 'export',
-    description: 'Export DESIGN.md tokens to other formats. `css-tailwind` emits Tailwind v4 CSS @theme; `json-tailwind` emits Tailwind v3 theme.extend JSON; `tailwind` is an alias for `json-tailwind`; `dtcg` emits W3C Design Tokens; `css-vars` emits CSS custom properties.',
+    description: 'Export DESIGN.md tokens to other formats. `css-tailwind` emits Tailwind v4 CSS @theme; `json-tailwind` emits Tailwind v3 theme.extend JSON; `tailwind` is an alias for `json-tailwind`; `dtcg` emits W3C Design Tokens; `css-vars` emits CSS custom properties; `css-fonts` emits @font-face rules and font custom properties.',
   },
   args: {
     file: {
@@ -69,7 +71,15 @@ export default defineCommand({
     }
     const report = lint(content);
 
-    if (format === 'css-tailwind') {
+    if (format === 'css-fonts') {
+      const result = new CssFontsEmitterHandler().execute(report.designSystem);
+      if (!result.success) {
+        console.error(JSON.stringify({ error: result.error.code, message: result.error.message }));
+        process.exitCode = 1;
+        return;
+      }
+      process.stdout.write(result.data.css);
+    } else if (format === 'css-tailwind') {
       const handler = new TailwindV4EmitterHandler();
       const result = handler.execute(report.designSystem);
 

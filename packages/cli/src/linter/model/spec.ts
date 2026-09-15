@@ -1,4 +1,5 @@
 // Copyright 2026 Google LLC
+// Modified by cateyelow in 2026 for the landing fork: retain landing metadata for validation and export.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -70,6 +71,9 @@ export const VALID_COMPONENT_SUB_TOKENS = _VALID_COMPONENT_SUB_TOKENS;
 
 // ── STATE ──────────────────────────────────────────────────────────
 export interface DesignSystemState {
+  /** Raw metadata is validated by landing rules and font emitter contracts. */
+  fonts?: unknown;
+  direction?: unknown;
   name?: string | undefined;
   description?: string | undefined;
   omitted?: OmittedSection[] | undefined;

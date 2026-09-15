@@ -1,4 +1,5 @@
 // Copyright 2026 Google LLC
+// Modified by cateyelow in 2026 for the landing fork: verify appended landing rules.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,7 +41,10 @@ describe('LintRule type', () => {
   });
 
   it('has all rules in DEFAULT_RULE_DESCRIPTORS', () => {
-    expect(DEFAULT_RULE_DESCRIPTORS.length).toBe(11);
+    expect(DEFAULT_RULE_DESCRIPTORS.length).toBe(16);
+    expect(DEFAULT_RULE_DESCRIPTORS.slice(-5).map(rule => rule.name)).toEqual([
+      'font-license', 'generic-typeface', 'single-family', 'ai-palette', 'direction-record',
+    ]);
     DEFAULT_RULE_DESCRIPTORS.forEach((rule: RuleDescriptor) => {
       expect(rule.name).toBeTruthy();
       expect(rule.severity).toBeTruthy();

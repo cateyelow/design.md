@@ -1,4 +1,5 @@
 // Copyright 2026 Google LLC
+// Modified by cateyelow in 2026 for the landing fork: expect sixteen documented lint rules.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -89,6 +90,6 @@ describe('spec command', () => {
     const output = JSON.parse(outputStr);
     expect(output.spec).toBeDefined();
     expect(output.rules).toBeDefined();
-    expect(output.rules.length).toBe(11);
+    expect(output.rules.length).toBe(16);
   });
 });

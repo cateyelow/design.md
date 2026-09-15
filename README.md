@@ -1,5 +1,9 @@
 # DESIGN.md
 
+<!-- Modified by cateyelow in 2026 for the landing fork: link fork setup and document landing rules and export. -->
+
+This is the landing-page fork. See [FORK.md](FORK.md) for additions and instructions to run it from a clone.
+
 A format specification for describing a visual identity to coding agents. DESIGN.md gives agents a persistent, structured understanding of a design system.
 
 ## The Format
@@ -288,7 +292,7 @@ npx @google/design.md export --format dtcg DESIGN.md > tokens.json
 | Option | Type | Default | Description |
 |:-------|:-----|:--------|:------------|
 | `file` | positional | required | Path to DESIGN.md (or `-` for stdin) |
-| `--format` | `json-tailwind` \| `css-tailwind` \| `tailwind` \| `dtcg` | required | Output format |
+| `--format` | `json-tailwind` \| `css-tailwind` \| `tailwind` \| `dtcg` \| `css-vars` \| `css-fonts` | required | Output format |
 
 | Format | Output | Description |
 |:-------|:-------|:------------|
@@ -296,6 +300,8 @@ npx @google/design.md export --format dtcg DESIGN.md > tokens.json
 | `css-tailwind` | CSS | Tailwind v4 `@theme { ... }` block with CSS custom properties |
 | `tailwind` | JSON | Alias for `json-tailwind` |
 | `dtcg` | JSON | W3C Design Tokens Format Module |
+| `css-vars` | CSS | CSS custom properties |
+| `css-fonts` | CSS | Font faces and font custom properties from `fonts` metadata |
 
 Exit code `0` on a successful export (regardless of any lint findings in the source — run `lint` to gate on those), `1` on an invalid `--format` or an emitter error, and `2` if the input file cannot be read.
 
@@ -317,7 +323,7 @@ npx @google/design.md spec --rules-only --format json
 
 ## Linting Rules
 
-The linter runs eleven rules against a parsed DESIGN.md. Each rule produces findings at a fixed severity level.
+The linter runs sixteen rules against a parsed DESIGN.md. Rules may vary finding severity according to the condition.
 
 | Rule | Severity | What it checks |
 |:-----|:---------|:---------------|
@@ -332,6 +338,11 @@ The linter runs eleven rules against a parsed DESIGN.md. Each rule produces find
 | `unknown-key` | warning | A top-level YAML key looks like a typo of a known schema key (e.g. `colours:` → `colors:`); custom extension keys stay silent |
 | `token-like-ignored` | warning | An unknown top-level key has token-like values (e.g. hex colors, font families, dimensions) suggesting it was dropped or misspelled |
 | `omitted-rules` | info | Validates the `omitted` configuration mapping for unknown or redundant sections |
+| `font-license` | warning / error | Font declarations and verification dates; malformed metadata and used fonts that prohibit web embedding are errors |
+| `generic-typeface` | warning / info | Common default typefaces; info when the family is named in `direction.type` |
+| `single-family` | info | Three or more typography tokens share one first family |
+| `ai-palette` | warning / info | Violet with cyan-blue warns; a violet primary without that pairing produces info |
+| `direction-record` | info / warning | Missing direction produces info; missing required guidance or malformed values warn |
 
 ### Programmatic API
 

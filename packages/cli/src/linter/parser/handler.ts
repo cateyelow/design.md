@@ -1,4 +1,5 @@
 // Copyright 2026 Google LLC
+// Modified by cateyelow in 2026 for the landing fork: parse fonts and art direction.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -215,6 +216,8 @@ export class ParserHandler implements ParserSpec {
       name: typeof raw['name'] === 'string' ? raw['name'] : undefined,
       description: typeof raw['description'] === 'string' ? raw['description'] : undefined,
       omitted,
+      fonts: raw['fonts'],
+      direction: raw['direction'],
       colors: raw['colors'] as Record<string, string> | undefined,
       typography: raw['typography'] as Record<string, Record<string, string | number>> | undefined,
       rounded: raw['rounded'] as Record<string, string> | undefined,

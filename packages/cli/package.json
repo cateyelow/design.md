@@ -1,16 +1,17 @@
 {
-  "name": "@google/design.md",
-  "version": "0.4.0",
+  "//": "Modified by cateyelow in 2026 for the landing fork: package identity and repository metadata.",
+  "name": "@cateyelow/design.md",
+  "version": "0.4.0-landing.1",
   "description": "Bridging design systems and code: a linter and exporter for the DESIGN.md format",
   "keywords": [
     "design.md"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/google-labs-code/design.md.git"
+    "url": "https://github.com/cateyelow/design.md"
   },
   "bugs": {
-    "url": "https://github.com/google-labs-code/design.md/issues"
+    "url": "https://github.com/cateyelow/design.md/issues"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -35,10 +36,6 @@
       "import": "./dist/linter/index.js",
       "types": "./dist/linter/index.d.ts"
     }
-  },
-  "publishConfig": {
-    "registry": "https://wombat-dressing-room.appspot.com",
-    "access": "public"
   },
   "scripts": {
     "build": "bun build src/index.ts src/linter/index.ts --outdir dist --target node && npx tsc --project tsconfig.build.json --emitDeclarationOnly --skipLibCheck && cp src/linter/spec-config.yaml dist/linter/ && cp src/linter/spec-config.yaml dist/ && cp ../../docs/spec.md dist/linter/ && cp ../../docs/spec.md dist/",

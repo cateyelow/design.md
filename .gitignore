@@ -5,3 +5,5 @@ dist/
 bun.lockb
 *.tgz
 .turbo/
+# Modified by cateyelow in 2026 for the landing fork: bun install inside packages/cli writes its own lockfile.
+packages/cli/bun.lock

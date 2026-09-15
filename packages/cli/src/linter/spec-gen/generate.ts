@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 // Copyright 2026 Google LLC
+// Modified by cateyelow in 2026 for the landing fork: retain a modification notice in generated docs.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,7 +57,7 @@ async function main() {
 
   // Prepend header comment
   const header = `<!-- Generated from spec.mdx + spec-config.ts | version: ${cfg.SPEC_VERSION} -->\n<!-- Do not edit directly. Run \`bun run spec:gen\` to regenerate. -->\n\n`;
-  const content = header + generated;
+  const content = header + '<!-- Modified by cateyelow in 2026 for the landing fork: add fonts and direction to the generated specification. -->\n\n' + generated;
 
   if (isCheck) {
     const existing = await readFile(OUTPUT_PATH, 'utf-8');

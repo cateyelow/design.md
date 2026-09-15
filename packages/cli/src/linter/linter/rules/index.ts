@@ -1,4 +1,5 @@
 // Copyright 2026 Google LLC
+// Modified by cateyelow in 2026 for the landing fork: register landing font and art direction rules.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +27,11 @@ import { missingTypographyRule } from './missing-typography.js';
 import { unknownKeyRule } from './unknown-key.js';
 import { tokenLikeIgnoredRule } from './token-like-ignored.js';
 import { omittedRule } from './omitted.js';
+import { fontLicenseRule } from './font-license.js';
+import { genericTypefaceRule } from './generic-typeface.js';
+import { singleFamilyRule } from './single-family.js';
+import { aiPaletteRule } from './ai-palette.js';
+import { directionRecordRule } from './direction-record.js';
 
 /** The default set of lint rule descriptors, in order. */
 export const DEFAULT_RULE_DESCRIPTORS: RuleDescriptor[] = [
@@ -40,6 +46,11 @@ export const DEFAULT_RULE_DESCRIPTORS: RuleDescriptor[] = [
   unknownKeyRule,
   tokenLikeIgnoredRule,
   omittedRule,
+  fontLicenseRule,
+  genericTypefaceRule,
+  singleFamilyRule,
+  aiPaletteRule,
+  directionRecordRule,
 ];
 
 /** Converts a RuleDescriptor into a LintRule by injecting severity into findings. */
@@ -69,3 +80,4 @@ export { sectionOrder } from './section-order.js';
 export { tokenLikeIgnored } from './token-like-ignored.js';
 export { omittedRule as omitted } from './omitted.js';
 export type { LintRule } from './types.js';
+export { fontLicenseRule, genericTypefaceRule, singleFamilyRule, aiPaletteRule, directionRecordRule };

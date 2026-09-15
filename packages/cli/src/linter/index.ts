@@ -1,4 +1,5 @@
 // Copyright 2026 Google LLC
+// Modified by cateyelow in 2026 for the landing fork: expose font export contracts and landing rules.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +32,8 @@ export type { TailwindEmitterResult, TailwindThemeExtend } from './tailwind/spec
 export type { TailwindV4EmitterResult, TailwindV4ThemeData } from './tailwind/v4/spec.js';
 export type { DtcgEmitterResult, DtcgTokenFile } from './dtcg/spec.js';
 export type { CssVarsEmitterResult, CssVarDeclaration } from './css-vars/spec.js';
+export type { CssFontsEmitterResult, CssFontsEmitterSpec } from './css-fonts/spec.js';
+export type { FontEntry } from './model/font.js';
 
 // ── Advanced linting ───────────────────────────────────────────────
 export { runLinter, preEvaluate } from './linter/runner.js';
@@ -55,6 +58,8 @@ export { TailwindV4EmitterHandler } from './tailwind/v4/handler.js';
 export { serializeToCss as serializeTailwindV4 } from './tailwind/v4/serialize.js';
 export { DtcgEmitterHandler } from './dtcg/handler.js';
 export { CssVarsEmitterHandler } from './css-vars/handler.js';
+export { CssFontsEmitterHandler } from './css-fonts/handler.js';
+export { fontLicenseRule, genericTypefaceRule, singleFamilyRule, aiPaletteRule, directionRecordRule } from './linter/rules/index.js';
 export { serializeCssVars } from './css-vars/serialize.js';
 export { fixSectionOrder } from './fixer/handler.js';
 export type { FixerInput, FixerResult } from './fixer/spec.js';

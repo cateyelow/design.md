@@ -1,4 +1,5 @@
 // Copyright 2026 Google LLC
+// Modified by cateyelow in 2026 for the landing fork: preserve fonts and art direction.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,6 +45,9 @@ export interface OmittedSection {
 
 /** Raw, unresolved parsed output — mirrors the YAML schema */
 export interface ParsedDesignSystem {
+  /** Unvalidated metadata, retained so malformed values can be reported by rules. */
+  fonts?: unknown;
+  direction?: unknown;
   version?: string | undefined;
   name?: string | undefined;
   description?: string | undefined;
@@ -73,6 +77,8 @@ export const SCHEMA_KEYS = [
   'rounded',
   'spacing',
   'components',
+  'fonts',
+  'direction',
 ] as const;
 
 export type SchemaKey = typeof SCHEMA_KEYS[number];

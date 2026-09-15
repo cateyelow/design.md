@@ -1,4 +1,5 @@
 import { SPEC_VERSION, SECTIONS, TYPOGRAPHY_PROPERTIES, COMPONENT_SUB_TOKENS, CORE_COLOR_ROLES, RECOMMENDED_TOKENS, EXAMPLES } from '../spec-config.js'
+// Modified by cateyelow in 2026 for the landing fork: describe optional fonts and direction metadata.
 import { frontmatterExample, colorsExample, typographyExample, componentsExample, typographyPropertyList, typeDefinitions, sectionOrderList, componentSubTokenList, recommendedTokens } from './renderers.js'
 
 # DESIGN.md Format
@@ -29,6 +30,10 @@ version: <string>          # optional, current version: "alpha"
 name: <string>
 description: <string>      # optional
 omitted: <string[]|OmittedSection[]> # optional
+fonts:
+  <token-name>: <Font metadata> # optional top-level map
+direction:
+  <field>: <string>            # optional top-level map, extensible
 colors:
   <token-name>: <Color>
 typography:
@@ -49,6 +54,12 @@ The `<scale-level>` placeholder represents a named level in a sizing or spacing 
 {typographyPropertyList()}
 
 {typeDefinitions('Dimension')}
+
+{typeDefinitions('Fonts')}
+
+{typeDefinitions('Direction')}
+
+Unknown top-level keys remain allowed for project-specific extensions.
 
 **Omitted**: An array of sections that are intentionally omitted from the design system. This suppresses linter warnings for missing sections (e.g. colors, typography, spacing, rounded, components). Each entry can be:
 * A string representing the section name (e.g., `spacing`)

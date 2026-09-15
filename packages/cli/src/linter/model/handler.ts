@@ -1,4 +1,5 @@
 // Copyright 2026 Google LLC
+// Modified by cateyelow in 2026 for the landing fork: carry fonts and art direction into model state.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -213,6 +214,8 @@ export class ModelHandler implements ModelSpec {
           name: input.name,
           description: input.description,
           omitted: input.omitted,
+          fonts: input.fonts,
+          direction: input.direction,
           colors,
           typography,
           rounded,
