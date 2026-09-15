@@ -29,11 +29,26 @@ Both executable names, `design.md` and `designmd`, are retained.
   licenses, web embedding permission, verification dates, and local font files.
   Optional display, Unicode range, and fallback settings control CSS output.
 - Optional `direction` frontmatter records narrative, world, layout, type, color,
-  image, density, motion, tone, reason, and what differs for this project.
+  colorSource, image, density, motion, tone, reason, and what differs for this project.
+  `direction.colorSource` records where the color values came from: project
+  material or a sourced palette, such as `photo:storefront.jpg`, `catalog:<id>`,
+  `brand:<guide>`, or `reference:<url>`. The `direction-record` rule adds an info
+  finding when this field is missing or blank in a direction record.
   Additional string fields and unknown top-level keys remain allowed.
 - Five additional rules: `font-license` (warning/error), `generic-typeface`
   (warning/info), `single-family` (info), `ai-palette` (warning/info), and
   `direction-record` (info/warning).
+  `ai-palette` warns for violet paired with cyan-blue and notes a violet primary
+  on its own. It also warns for the palette models fall back to: off-white paper,
+  near-black ink, and at most one warm accent, including palettes with no accent.
+  This check uses D65 CIELAB lightness and chroma to identify light and dark
+  neutrals, and groups chromatic colors within 30 degrees of each hue family's
+  first member. It matches only when there are no chromatic colors or one warm
+  hue family. Take these color values from the project's material or a sourced
+  palette and record the source in `direction.colorSource`. A non-empty source
+  that does not start with `model` (case-insensitive, after trimming whitespace)
+  suppresses this check. `model` and `model: chosen by hand` still warn. The
+  violet findings are unaffected by the source.
 - `export --format css-fonts` emits one `@font-face` block per file followed by
   `:root` font variables. It preserves file paths and skips fonts with
   `webEmbedding: false`, emitting a CSS comment for each. Malformed font metadata

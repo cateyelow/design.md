@@ -1,6 +1,7 @@
 {
   "version": 1,
-  "rule": {"recent": 5, "minDifferentAxes": 5, "core": ["narrative", "layout", "image"], "minDifferentCore": 2},
+  "rule": {"recent": 5, "minDifferentAxes": 5, "core": ["narrative", "layout", "image"], "minDifferentCore": 2,
+           "familyWindow": 2},
   "axes": [
     {"key": "narrative", "label": "서사", "options": [
       "실제 작업 예시 → 과정 → 요금 → 조건",
@@ -10,24 +11,40 @@
       "비교표 → 선택 안내 → 신청",
       "만드는 과정 → 결과물 → 주문 방법"
     ]},
-    {"key": "world", "label": "레퍼런스 세계", "options": [
-      "스위스 박물관 전시 도록", "공구 회사 제품 사양서", "독립 서점 월간 소식지", "90년대 음반 속지",
-      "동네 신문 전면 광고", "항공사 기내 안전 안내문", "건축 사무소 포트폴리오", "호텔 룸서비스 메뉴",
-      "연구소 연차보고서", "80년대 일본 가전 카탈로그", "등산로 안내 표지판", "시장 가게 간판", "공연 포스터"
-    ]},
+    {"key": "world", "label": "레퍼런스 세계", "groups": {
+      "인쇄물": ["스위스 박물관 전시 도록", "공구 회사 제품 사양서", "독립 서점 월간 소식지", "90년대 음반 속지",
+        "동네 신문 전면 광고", "항공사 기내 안전 안내문", "건축 사무소 포트폴리오", "호텔 룸서비스 메뉴",
+        "연구소 연차보고서", "80년대 일본 가전 카탈로그", "공연 포스터"],
+      "장소와 표지": ["등산로 안내 표지판", "시장 가게 간판", "지하철 역사 안내 사인", "대중목욕탕 요금표", "놀이공원 안내 지도"],
+      "화면과 방송": ["90년대 PC통신 화면", "홈쇼핑 방송 자막", "야구장 전광판", "오락실 게임 선택 화면", "뉴스 날씨 예보 그래픽"],
+      "물건과 포장": ["과자 봉지 뒷면", "약국 약봉투", "전자제품 박스 옆면", "기차 승차권과 소인", "문구점 스티커 시트"]
+    }},
     {"key": "layout", "label": "레이아웃 원형", "options": [
       "편집 그리드 (본문과 캡션이 비대칭)", "포스터형 (첫 화면은 대형 타이포 하나)", "카탈로그형 (상품과 서비스를 목록으로)",
       "문서형 (왼쪽 목차 고정, 설명서처럼)", "스플릿 스크린 (한쪽 고정 이미지)", "표 중심 (가격과 사양 비교가 주인공)",
-      "사진 에세이 (전폭 사진과 짧은 문장 교차)", "전단형 (짧은 스크롤, 정보 밀집)"
+      "사진 에세이 (전폭 사진과 짧은 문장 교차)", "전단형 (짧은 스크롤, 정보 밀집)",
+      "지도형 (위치와 동선이 화면 구조)", "시간표형 (요일과 시간이 격자)"
     ]},
     {"key": "type", "label": "폰트 조합", "source": "fonts.json#pairings"},
     {"key": "color", "label": "색 전략", "options": [
-      "흰 종이와 검정 잉크, 인주색 한 점", "브랜드 사진에서 뽑은 두 색만", "짙은 단색 배경 한 가지와 흰 글자 (빛 번짐 없음)",
-      "리소그래프 2도 인쇄 (겹친 곳이 셋째 색)", "무채색과 고채도 한 색 (강조에만)", "브랜드 기존 색 그대로, 새 색 금지"
-    ]},
+      "업체 사진에서 뽑은 색을 넓은 면으로 (배경과 섹션 면)",
+      "배색 사전 3색 조합, 섹션마다 면 색이 바뀜",
+      "배색 사전의 짙은 색 하나를 전면 배경으로, 글자는 밝게",
+      "리소그래프 2도 인쇄 (잉크 두 색은 배색 사전에서, 겹친 곳이 셋째 색)",
+      "간판, 포장, 유니폼 같은 업종 실물 사진에서 잰 색",
+      "브랜드 기존 색 그대로, 새 색 금지"
+    ], "recipes": {
+      "업체 사진에서 뽑은 색을 넓은 면으로 (배경과 섹션 면)": "palette.py extract <업체 사진> 다음 roles --scheme ground",
+      "배색 사전 3색 조합, 섹션마다 면 색이 바뀜": "palette.py wada --draw 3 --project <이름> 에서 하나를 골라 roles --scheme light, second와 accent를 섹션 면에",
+      "배색 사전의 짙은 색 하나를 전면 배경으로, 글자는 밝게": "palette.py wada --draw 3 --project <이름> 에서 하나를 골라 roles --scheme dark",
+      "리소그래프 2도 인쇄 (잉크 두 색은 배색 사전에서, 겹친 곳이 셋째 색)": "palette.py wada --draw 3 --project <이름> 에서 두 색, 겹친 곳은 mix-blend-mode: multiply 로 계산",
+      "간판, 포장, 유니폼 같은 업종 실물 사진에서 잰 색": "palette.py extract <실물 사진> 다음 roles --scheme light",
+      "브랜드 기존 색 그대로, 새 색 금지": "브랜드 가이드 값을 roles --source brand:<가이드> 로 넣어 대비만 확인"
+    }},
     {"key": "image", "label": "이미지 처리", "options": [
       "필름 그레인 실사", "흑백 다큐 사진", "제품 누끼와 실제 그림자 합성", "사진 조각과 종이 질감 콜라주",
-      "이미지 없음, 타이포와 표만", "하프톤 단색 처리 사진"
+      "이미지 없음, 타이포와 표만", "하프톤 단색 처리 사진",
+      "원색 배경지 스튜디오 사진 (정면 플래시)", "손으로 그린 일러스트와 도식", "휴대폰으로 찍은 현장 사진 그대로 (보정 최소)"
     ]},
     {"key": "density", "label": "밀도", "options": ["넓은 여백", "보통", "표와 목록 위주의 밀집"]},
     {"key": "motion", "label": "모션", "options": ["없음", "호버와 포커스만", "스크롤 연동 딱 한 곳"]},
@@ -39,7 +56,9 @@
     [["density", "넓은 여백"], ["layout", "전단형 (짧은 스크롤, 정보 밀집)"]],
     [["density", "표와 목록 위주의 밀집"], ["layout", "포스터형 (첫 화면은 대형 타이포 하나)"]],
     [["density", "표와 목록 위주의 밀집"], ["layout", "사진 에세이 (전폭 사진과 짧은 문장 교차)"]],
-    [["color", "리소그래프 2도 인쇄 (겹친 곳이 셋째 색)"], ["image", "필름 그레인 실사"]],
+    [["color", "리소그래프 2도 인쇄 (잉크 두 색은 배색 사전에서, 겹친 곳이 셋째 색)"], ["image", "필름 그레인 실사"]],
+    [["color", "리소그래프 2도 인쇄 (잉크 두 색은 배색 사전에서, 겹친 곳이 셋째 색)"], ["image", "원색 배경지 스튜디오 사진 (정면 플래시)"]],
+    [["layout", "시간표형 (요일과 시간이 격자)"], ["image", "사진 조각과 종이 질감 콜라주"]],
     [["tone", "편지체"], ["layout", "표 중심 (가격과 사양 비교가 주인공)"]],
     [["narrative", "한 사람의 하루 속에 제품이 등장 → 조건"], ["layout", "표 중심 (가격과 사양 비교가 주인공)"]],
     [["narrative", "비교표 → 선택 안내 → 신청"], ["image", "사진 조각과 종이 질감 콜라주"]],
@@ -54,6 +73,9 @@
     "제품 누끼와 실제 그림자 합성": "background plate only for compositing a real product photo: plain seamless paper, single soft box from the upper left, empty space where the product will sit, no product",
     "사진 조각과 종이 질감 콜라주": "raw photographs of real textures and objects meant to be cut out later; plain background, strong silhouettes, no stylization",
     "이미지 없음, 타이포와 표만": null,
-    "하프톤 단색 처리 사진": "high contrast photograph with simple large shapes that will survive a one-color halftone treatment"
+    "하프톤 단색 처리 사진": "high contrast photograph with simple large shapes that will survive a one-color halftone treatment",
+    "원색 배경지 스튜디오 사진 (정면 플래시)": "studio photograph of the tools or materials of the trade on one saturated seamless paper backdrop in the page's ground color, direct on-camera flash, hard shadow directly behind the objects, no people",
+    "손으로 그린 일러스트와 도식": "loose pencil and marker drawing on plain paper, uneven line weight, visible construction lines, scanned flat, one or two marker colors from the page palette",
+    "휴대폰으로 찍은 현장 사진 그대로 (보정 최소)": null
   }
 }

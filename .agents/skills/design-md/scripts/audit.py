@@ -12,6 +12,11 @@ mixed-script or mixed-font nodes can hide a minority fallback.
 
 Counts are finding records per severity, not the number of matching elements.
 Each finding's count is its number of matches (phrase occurrences for clichés).
+
+At the widest width the page is also fingerprinted (fingerprint.py): measured ground,
+ink and accent colors and decoration habits. `generated-look` flags a palette and
+habits models fall back to; `near-recent` (with --ledger) flags a page that repeats a
+recent ledger entry's palette or habits, whatever its direction labels say.
 """
 
 from __future__ import annotations
@@ -25,6 +30,9 @@ import re
 import sys
 from urllib.parse import unquote, urlsplit
 from urllib.request import url2pathname
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import fingerprint  # noqa: E402
 
 
 DOM_AUDIT = r"""() => {
@@ -670,6 +678,15 @@ def markdown_report(report: dict) -> str:
         lines.extend([f"## {finding['severity'].upper()}: {finding['id']} ({finding['width']}px)", "",
                       f"{finding['message']} Matches: {finding['count']}.", "", "```json",
                       json.dumps(finding["samples"], ensure_ascii=False, indent=2), "```", ""])
+    fp = report.get("fingerprint")
+    if fp:
+        accents = " ".join(item["hex"] for item in fp["accents"][:3]) or "none"
+        lines.extend([f"## Fingerprint ({fp.get('width')}px)", "",
+                      f"- ground {fp['ground']['hex']}, ink {fp['ink']['hex']}, accents {accents}, "
+                      f"chromatic area {fp['chromaticShare']}",
+                      f"- type scale {fp['scale']} (largest {fp['largestSize']}px over body {fp['bodySize']}px), "
+                      f"display {fp['display'] or 'none'}",
+                      f"- habits: {', '.join(fingerprint.tics(fp)) or 'none'}", ""])
     lines.extend(["## Skipped", ""])
     if report["skipped"]:
         for item in report["skipped"]:
@@ -683,7 +700,7 @@ def markdown_report(report: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
-def run_audit(browser, target: str, widths=(1440, 390), out="./audit-out", timeout=30) -> dict:
+def run_audit(browser, target: str, widths=(1440, 390), out="./audit-out", timeout=30, ledger=None) -> dict:
     """Audit with a caller-owned browser; each width gets an isolated context."""
     url = target_url(str(target))
     output = Path(out).resolve()
@@ -737,6 +754,15 @@ def run_audit(browser, target: str, widths=(1440, 390), out="./audit-out", timeo
             # Preserve motion in the evidence; screenshot capture is also bounded.
             page.screenshot(path=str(screenshot), full_page=True, timeout=timeout * 1000)
             report["screenshots"][str(width)] = str(screenshot)
+            if width == max(widths):
+                try:
+                    measured = fingerprint.measure(page, timeout)
+                    report["fingerprint"] = measured
+                    report["findings"].extend({**item, "width": width}
+                                              for item in fingerprint.findings(measured, ledger or []))
+                except Exception as exc:
+                    report["skipped"].append({"id": "generated-look", "width": width,
+                                              "reason": f"Fingerprint measurement unavailable: {exc}"})
             if diagnostics:
                 report["findings"].append({"id": "console-errors", "severity": "warn", "width": width,
                                            "message": "Console errors, uncaught exceptions, or failed load requests.",
@@ -778,18 +804,20 @@ def main(argv=None, *, browser=None) -> int:
     parser.add_argument("--json", action="store_true", help="Print JSON instead of Markdown")
     parser.add_argument("--fail-on", choices=("error", "warn"), default="error")
     parser.add_argument("--timeout", type=positive_timeout, default=30)
+    parser.add_argument("--ledger", type=Path, help="design ledger whose recent fingerprints the page is compared with")
     args = parser.parse_args(argv)
     try:
         url = target_url(args.target)
+        ledger = fingerprint.read_ledger(args.ledger.expanduser()) if args.ledger else []
         if browser is not None:
-            report = run_audit(browser, url, args.widths, args.out, args.timeout)
+            report = run_audit(browser, url, args.widths, args.out, args.timeout, ledger)
         else:
             from playwright.sync_api import sync_playwright
 
             with sync_playwright() as playwright:
                 chrome = playwright.chromium.launch(channel="chrome", headless=True)
                 try:
-                    report = run_audit(chrome, url, args.widths, args.out, args.timeout)
+                    report = run_audit(chrome, url, args.widths, args.out, args.timeout, ledger)
                 finally:
                     chrome.close()
         print(json.dumps(report, ensure_ascii=False, indent=2) if args.json else markdown_report(report), end="\n")

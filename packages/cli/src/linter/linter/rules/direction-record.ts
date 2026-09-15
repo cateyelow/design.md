@@ -39,6 +39,14 @@ export const directionRecordRule: RuleDescriptor = {
         findings.push({ path: `direction.${field}`, severity: 'warning', message: 'Direction values must be strings.' });
       }
     }
+    const colorSource = state.direction.colorSource;
+    if (colorSource === undefined || (typeof colorSource === 'string' && !colorSource.trim())) {
+      findings.push({
+        path: 'direction.colorSource',
+        severity: 'info',
+        message: 'Record where the color values came from: photo:<file>, catalog:<id>, brand:<guide> or reference:<url>.',
+      });
+    }
     return findings;
   },
 };

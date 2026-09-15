@@ -50,7 +50,7 @@ A raw generation is rarely the asset. Work the file in an image editor before it
 | Clean defects | Clone stamp, patch and remove tool for hands, repeated patterns and letter-like marks. Generative fill reintroduces generated texture; keep it to small areas. |
 | Composite real products | Match shadow direction and color temperature to the plate; paint the contact shadow on a multiply layer. |
 | Unify the set | Put all images of the page side by side; match exposure, white balance and black level. |
-| Grade into the palette | Curves or Color Lookup adjustment layers so photos sit inside the DESIGN.md colors; lower saturation slightly and hold highlights. |
+| Grade into the palette | Curves or Color Lookup adjustment layers so photos sit inside the DESIGN.md colors. Match the saturation the direction calls for: a broadcast, packaging or market-sign world wants it high, and a default "slightly desaturated, warm" grade is the generated look again. |
 | Grain | Only when the image treatment calls for it, the same size on every image. Camera Raw grain around amount 15 to 25, size 20 to 30 is a starting point. Grain does not fix wrong structure. |
 | Crop per breakpoint | Separate desktop and mobile crops that fit the image boxes the page actually uses; move the subject off center. |
 | Export | WebP or JPEG at twice the displayed size; keep the layered original and the raw generation. |

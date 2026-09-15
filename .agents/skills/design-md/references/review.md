@@ -8,8 +8,8 @@ Read when auditing a build, reviewing another model's page, rewriting copy, or p
 
 | Severity | Checks | What to do |
 |---|---|---|
-| error | `font-fallback`, `overflow-x` | Fix. A fallback means the site does not show the licensed face you comped. |
-| warn | `font-generic`, `accent-italic-serif`, `gradient-text`, `badge-above-h1`, `icon-card-grid`, `accent-stripe`, `violet-blue-gradient`, `glow`, `glass`, `infinite-animation`, `reduced-motion`, `ko-dash`, `emoji-icons`, `contrast`, `tap-target`, `img-alt`, `console-errors` | Fix, or cite the DESIGN.md reason when it is a deliberate choice of this direction. |
+| error | `font-fallback`, `overflow-x` | Fix. A fallback means the site does not show the licensed face DESIGN.md names. |
+| warn | `font-generic`, `accent-italic-serif`, `gradient-text`, `badge-above-h1`, `icon-card-grid`, `accent-stripe`, `violet-blue-gradient`, `glow`, `glass`, `infinite-animation`, `reduced-motion`, `ko-dash`, `emoji-icons`, `contrast`, `tap-target`, `img-alt`, `console-errors`, `generated-look`, `near-recent` | Fix, or cite the DESIGN.md reason when it is a deliberate choice of this direction. `generated-look` and `near-recent` come from the measured render (fingerprint.py): fix them by changing the color source or the decoration habits, not by nudging values. |
 | info | `single-family`, `all-caps-labels`, `centered-hero`, `nested-cards`, `uniform-radius`, `ko-cliche`, `en-cliche`, `exclaim-cta`, `not-x-but-y`, `two-tone-headline`, `arrow-cta`, `speech-level-mix`, `img-dimensions` | Read the samples; several infos on one page usually mean the template skeleton is back. |
 
 `skipped` entries (for example unreadable cross-origin stylesheets, or text under `opacity` or `mix-blend-mode` for contrast) mean the check did not run. Report them; do not count them as clean. Geometry, contrast (ancestor backgrounds only) and copy checks are heuristics.

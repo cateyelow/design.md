@@ -90,6 +90,7 @@ direction:                          # fork; every value a string, extra keys all
   motion: <how much moves>
   tone: <who is speaking>
   reason: <why this direction answers the brief>
+  colorSource: <photo:<file> | catalog:wada#<n> | brand:<guide> | reference:<url>, as printed by palette.py roles>
   differs: <how it differs from recent ledger entries>
 ```
 
@@ -126,13 +127,13 @@ Fork rules:
 | `font-license` | warning | typography uses a non-generic family not declared in `fonts`, or `verified` is not a real date |
 | `generic-typeface` | warning, info | Inter, Geist, Space Grotesk, Instrument Serif, Poppins, Montserrat, Roboto, Open Sans, DM Sans, Plus Jakarta Sans or Manrope is used; info when `direction.type` names it |
 | `single-family` | info | three or more typography tokens all use one family (fine when intentional) |
-| `ai-palette` | warning, info | a violet colour paired with a cyan-blue one; info when `primary` alone is violet |
-| `direction-record` | info, warning | info when `direction` is absent; warning when `narrative`, `layout` or `image` is missing or empty, or a value is not a string |
+| `ai-palette` | warning, info | a violet colour paired with a cyan-blue one; info when `primary` alone is violet; warning when the colours are an off-white paper, a near-black ink and at most one warm accent, unless `direction.colorSource` names a source other than `model` |
+| `direction-record` | info, warning | info when `direction` is absent or has no `colorSource`; warning when `narrative`, `layout` or `image` is missing or empty, or a value is not a string |
 
 ## Authoring checklist
 
 - [ ] Overview names a specific reference world and the reason it fits this business.
-- [ ] `direction` has all nine axes plus `reason` and `differs`.
+- [ ] `direction` has all nine axes plus `reason`, `differs` and `colorSource`, and every colour token traces to that source.
 - [ ] `colors.primary` defined; prose gives each colour a role.
 - [ ] Every typography family is declared in `fonts` with source, license, `webEmbedding` and `verified`.
 - [ ] Sections in canonical order; only the ones the work needs.

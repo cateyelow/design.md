@@ -7,10 +7,10 @@ Read when proposing or adjusting a direction, collecting references, or writing 
 | Axis | Decides | Why it matters |
 |---|---|---|
 | narrative | the role and order of sections: what persuades | The strongest convergence is the section skeleton (hero, three features, testimonials, pricing, FAQ, CTA). Removing gradients does not help while that skeleton stays. |
-| world | one concrete object or medium the page belongs to | A specific reference carries many decisions and names what the page is not. "Tool company specification sheet" rules out glow, blobs and pill badges without a list. |
+| world | one concrete object or medium the page belongs to, from four groups: print, places and signs, screens and broadcasts, objects and packaging | A specific reference carries many decisions and names what the page is not. "Home shopping caption" rules out hairline editorial restraint as surely as "tool company specification sheet" rules out glow. Print matter pulls toward the paper-and-ink look, so the group has to rotate. |
 | layout | the archetype and reading order | Editorial grid, poster, catalog, document with fixed contents, split screen, table-first, photo essay, flyer. |
 | type | a pairing id from fonts.json | Role split between display and text; the Korean display face sets the page's first impression more than any Latin accent. |
-| color | how many colors and where they come from | Paper and ink with one stamp red, two colors taken from the brand photo, a riso two-color print. |
+| color | where the values come from and how much area they take | Colors measured from the business's photos as large surfaces, a Wada combination changing per section, one dark dictionary color as the whole ground, a riso two-color print, colors measured from the trade's signage or packaging, the brand's own colors. Each option has a `palette.py` recipe; no option lets the model type a hex value. |
 | image | the physical treatment of pictures | Film grain, black and white documentary, product cut-out with real shadow, collage, none, halftone. |
 | density | the ratio of space to information | Wide margins, normal, table and list dense. |
 | motion | how much moves | None, hover and focus only, one scroll-linked moment. |
@@ -22,14 +22,14 @@ Brand-fixed choices are locked with `--lock axis=value`. The options are a curat
 
 Start from the brief's persuasion problem, for example "first-time visitors suspect the price; within two screens they must see a real finished example and the cost structure". Prefer the candidate whose narrative answers that problem, then check that layout and image treatment can carry the real material you actually have. A photo essay without photos, or a table-first page without comparable data, is the wrong candidate even if it is novel.
 
-The ledger rule (at least five of nine axes different from each of the last five entries, and two of narrative, layout, image) is a starting threshold. Color-only variation reads as the same site. Use one ledger for all of the user's projects so different clients stop converging.
+The ledger rule (at least five of nine axes different from each of the last five entries, two of narrative, layout, image, and a different world group from the last two) is a starting threshold. Color-only variation reads as the same site. Labels are not the render either: two pilots with different labels came out with the same ground, ink and habits, which is why `record --fingerprint` stores the measured page and `audit.py --ledger` compares the next one with it. Use one ledger for all of the user's projects so different clients stop converging.
 
 ## Reference images
 
 References steer harder than prompts or skills, and a single reference produces a copy. For each project:
 
 - Collect 3 to 5 references that represent different axes, and write what to take from each: "A: camera height and margin placement only", "B: type density only", "C: the distance to the subject in photos only".
-- Look beyond web galleries: books, exhibition catalogs, packaging, industry documents, signage, product manuals. [Minimal Gallery](https://minimal.gallery/) and [Awwwards](https://www.awwwards.com/) are useful for web craft, but their top pages are what everyone copies.
+- Look beyond web galleries, and beyond print: broadcast graphics, ticket machines and kiosks, packaging, signage, pharmacy and hospital forms, game menus, sports scoreboards, as well as books and product manuals. [Minimal Gallery](https://minimal.gallery/) and [Awwwards](https://www.awwwards.com/) are useful for web craft, but their top pages are what everyone copies.
 - A search like "pro desktop app UI" on Pinterest suits productivity tools. Desktop tool screens optimize repeated work; a landing page has to persuade a first visitor, so borrow density and hierarchy, not the structure.
 - The final reference for implementation is the project's own rendered page (step 6), not the gallery images.
 

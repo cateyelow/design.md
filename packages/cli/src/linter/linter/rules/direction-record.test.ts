@@ -17,14 +17,46 @@ import { directionRecordRule } from './direction-record.js';
 import { buildState } from './test-helpers.js';
 
 describe('direction-record', () => {
+  it('notes a missing or empty color source in a direction record', () => {
+    for (const source of [{}, { colorSource: '' }, { colorSource: ' \t ' }]) {
+      expect(directionRecordRule.run(buildState({
+        direction: { narrative: 'A local journal', layout: 'Columns', image: 'Documentary', ...source },
+      }))).toEqual([{
+        path: 'direction.colorSource',
+        severity: 'info',
+        message: 'Record where the color values came from: photo:<file>, catalog:<id>, brand:<guide> or reference:<url>.',
+      }]);
+    }
+  });
+  it('does not add a color source finding when a non-empty string is recorded', () => {
+    for (const colorSource of ['photo:storefront.jpg', 'catalog:42', 'brand:guide.pdf', 'reference:https://example.com/palette', 'model']) {
+      expect(directionRecordRule.run(buildState({
+        direction: { narrative: 'A local journal', layout: 'Columns', image: 'Documentary', colorSource },
+      }))).toEqual([]);
+    }
+  });
+  it('keeps the existing warning for a non-string color source without adding info', () => {
+    for (const colorSource of [null, 42, {}, [], false]) {
+      expect(directionRecordRule.run(buildState({
+        direction: { narrative: 'A local journal', layout: 'Columns', image: 'Documentary', colorSource },
+      }))).toEqual([{
+        path: 'direction.colorSource',
+        severity: 'warning',
+        message: 'Direction values must be strings.',
+      }]);
+    }
+  });
   it('reports malformed maps and non-string extension values without errors or duplicate findings', () => {
     for (const direction of [null, [], false, 'editorial']) {
       expect(directionRecordRule.run(buildState({ direction }))).toEqual([expect.objectContaining({ path: 'direction', severity: 'warning' })]);
     }
     const findings = directionRecordRule.run(buildState({ direction: { narrative: 42, layout: 'Columns', image: 'Photos', custom: {}, type: false } }));
-    expect(findings).toHaveLength(3);
-    expect(findings.map(f => f.path).sort()).toEqual(['direction.custom', 'direction.narrative', 'direction.type']);
-    expect(findings.every(f => f.severity === 'warning')).toBe(true);
+    expect(findings).toEqual([
+      expect.objectContaining({ path: 'direction.narrative', severity: 'warning' }),
+      expect.objectContaining({ path: 'direction.custom', severity: 'warning' }),
+      expect.objectContaining({ path: 'direction.type', severity: 'warning' }),
+      expect.objectContaining({ path: 'direction.colorSource', severity: 'info' }),
+    ]);
   });
   it('notes an absent direction and warns for each missing or empty required field', () => {
     expect(directionRecordRule.severity).toBe('info');
@@ -33,7 +65,10 @@ describe('direction-record', () => {
       expect.objectContaining({ path: 'direction.narrative', severity: 'warning' }),
       expect.objectContaining({ path: 'direction.layout', severity: 'warning' }),
       expect.objectContaining({ path: 'direction.image', severity: 'warning' }),
+      expect.objectContaining({ path: 'direction.colorSource', severity: 'info' }),
     ]);
-    expect(directionRecordRule.run(buildState({ direction: { narrative: 'A local journal', layout: 'Columns', image: 'Documentary', custom: 'Free extension' } }))).toEqual([]);
+    expect(directionRecordRule.run(buildState({ direction: { narrative: 'A local journal', layout: 'Columns', image: 'Documentary', custom: 'Free extension' } }))).toEqual([
+      expect.objectContaining({ path: 'direction.colorSource', severity: 'info' }),
+    ]);
   });
 });
