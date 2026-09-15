@@ -55,11 +55,36 @@ Refuse by default: pill badges above the headline, three equal icon cards, round
 
 ## Detail that shows a person was there
 
-- Units in table headers, and the source of a number next to the number when the number has one. A line that says what the numbers in a table mean is content, not the decorative caption habit.
+- Units in table headers, and the source of a number next to the number when the number has one. Put what a table's numbers mean into its headers; a legend sentence is only for a table whose headers cannot carry it.
 - Hover, focus-visible, active and disabled states for everything clickable; focus rings that fit the design.
 - Images cropped per breakpoint, with the subject off center, and the same light direction across the set.
 - `prefers-reduced-motion` honoured, and motion only where it explains something.
 - Real text in the first screen: no placeholder proportions that assume copy which does not exist yet.
+
+## Copy: each fact once
+
+Generated copy gives itself away less by single phrases than by saying everything again. Three pages built with this skill by fresh agents showed it: a bakery gave its first bake time, 07:30, in six places (the hero sentence, the table, a "next bake" widget, a sentence under it, the day timeline, the rules list); a climbing gym gave its Saturday 11:00 trial class and its 35,000원 price in the hero, the first section, the price list, the timetable and the closing block; a tax office ended with a 표시사항 list that restated eight of the nine facts above it, after sentences telling the reader that the fees were "all in the table" and what "this page does not cover". Each block was reasonable alone. Together they are a page that talks at the reader.
+
+- Give every fact one home: the place a reader looking for that kind of fact goes. When the page has a price list, every price is in it; when it has a timetable, every opening hour and class time is in it. A course block then keeps what only it says (length, group size, what is taught) and names the course without restating its price or hours. Without a price list, the course block holds its own price.
+- An action may carry what that action needs: the phone number with the booking deadline beside the call button, the class time beside the booking button. When the first screen and the closing block offer the same action, the first screen carries the offer's facts and the closing block can be the action alone. The footer may hold the name, address, hours and phone once; when the contact block sits directly above it, the footer drops what that block just said. Nothing else repeats a fact.
+- When two devices show the same data (a timetable and a day timeline, a fee table and a disclosure list), keep the one that does the job and remove the other whole. Stripping the values out of one leaves a decoration that still points at the data.
+- A table or diagram keeps its headers, units and labels. Cut the sentence that repeats them, not the labels; a table needs no sentence announcing what it shows and no list restating it.
+- Cut sentences about the page instead of the offer: what a table contains, what the page leaves out, which questions the reader must be asking. Material that is missing is recorded in the brief and simply absent from the page.
+- The first screen says what this is and where or for whom, at most two short sentences (a letter's opening included), and the action. A paragraph summarizing the sections below is the intro every reader skips.
+- `direction.tone` decides the voice, not the length. A letter is still a few sentences; the neighborhood owner still says each thing once.
+- A heading followed by a sentence that says the heading again is one of the two too many.
+
+Cut pass, after the craft pass. Read the page as plain text top to bottom (`document.body.innerText` in the browser console) at both widths, because a header hidden at 390px may be the only place a fact appears. Keep each fact in its home and strike its other appearances, even when a copy came first in reading order; strike every sentence about the page. Then repair what the cut left:
+
+- a sentence that lost its repeat keeps what only it said as a whole sentence, never a fragment;
+- a fact that lived only in a deleted block moves to the block it belongs to;
+- a unit that only a legend sentence gave moves into the table header;
+- a diagram that lost its explaining sentence keeps a short label naming what it measures;
+- a heading that no longer fits what is under it is renamed or merged with its neighbor;
+- an emptied table column is removed, and rows that became identical collapse into one ("월~금 12:00~23:00");
+- the layout closes the gap without shrinking the surfaces the color strategy assigned, for example by putting the section on a grid another section already uses or by letting the remaining line take the freed type size.
+
+Update DESIGN.md where the cut removed a component: its description, the tokens only it used, and any `direction` axis the page no longer does (a removed scroll device changes `motion`). Last, check that everything a customer needs is still on the page. The shorter page is usually the one that reads as written by the business.
 
 ## Looking at it
 

@@ -13,6 +13,12 @@ mixed-script or mixed-font nodes can hide a minority fallback.
 Counts are finding records per severity, not the number of matching elements.
 Each finding's count is its number of matches (phrase occurrences for clichés).
 
+Copy checks count times, prices, dates and phone numbers per block (tables, lists and
+runs of same-shaped items are one block; links, buttons, the footer and fixed or
+screen-reader-only text are excluded) and compare sentences across blocks, so a page
+that states a fact again, restates a table in a list, paraphrases an earlier sentence or
+describes itself is reported. An idea repeated in different words is not detected.
+
 At the widest width the page is also fingerprinted (fingerprint.py): measured ground,
 ink and accent colors and decoration habits. `generated-look` flags a palette and
 habits models fall back to; `near-recent` (with --ledger) flags a page that repeats a
@@ -483,6 +489,144 @@ DOM_AUDIT = r"""() => {
             add('speech-level-mix', 'info', `Korean sentence endings mix 요 (${totals.yo}) and 니다 (${totals.nida}).`,
                 matches.map(s => ({...s, computed: {...s.computed, totals}})), total);
         }
+    });
+    // Copy that says the same thing again. A table, a list or a run of three or more
+    // same-shaped items is one place: its rows are data, not repeats. Links and buttons
+    // are actions, and the footer is where a summary belongs, so neither counts.
+    const copyPlaces = [];
+    (() => {
+        const shape = el => `${el.localName}.${[...el.classList].sort().join('.')}`;
+        const concealed = el => {
+            for (let p = el, depth = 0; p && p !== document.body; p = p.parentElement, depth++) {
+                const css = style(p), box = rect(p);
+                if (css.position === 'fixed') return true;
+                if (depth < 4 && ((box.width <= 1 || box.height <= 1) && css.overflow !== 'visible' ||
+                    (css.clip && css.clip !== 'auto') || /inset\(50%/.test(css.clipPath))) return true;
+            }
+            return false;
+        };
+        const placeOf = el => {
+            const list = el.closest('table, dl, ul, ol');
+            if (list) return list;
+            let block = el;
+            while (block.parentElement && /^(inline|contents)$/.test(style(block).display)) block = block.parentElement;
+            for (let p = block, depth = 0; depth < 2 && p.parentElement && p.parentElement !== document.body;
+                p = p.parentElement, depth++) {
+                if (p.matches('p, h1, h2, h3, h4, h5, h6, blockquote, section, main, article') || rect(p).height >= 400) continue;
+                if ([...p.parentElement.children].filter(child => shape(child) === shape(p)).length >= 3) return p.parentElement;
+            }
+            return block;
+        };
+        const places = new Map();
+        // Walk text nodes again so a sentence keeps its order around inline markup.
+        const nodes = document.createTreeWalker(document.body || document.documentElement, NodeFilter.SHOW_TEXT);
+        while (nodes.nextNode()) {
+            const node = nodes.currentNode, el = node.parentElement;
+            if (!el || !direct.has(el) || !norm(node.textContent)) continue;
+            if (el.closest('a, button, [role="button"], label, select, textarea, pre, code, [aria-hidden="true"], ' +
+                'footer, [role="contentinfo"], dialog, [role="dialog"], [role="alertdialog"]') || concealed(el)) continue;
+            const place = placeOf(el);
+            if (!places.has(place)) {
+                places.set(place, {el: place, parts: [], list: place.matches('table, dl, ul, ol'), index: places.size});
+                copyPlaces.push(places.get(place));
+            }
+            places.get(place).parts.push(node.textContent);
+        }
+        const two = n => String(n).padStart(2, '0');
+        for (const place of copyPlaces) {
+            place.text = norm(place.parts.join(' '));
+            place.facts = new Map();
+            const note = (key, raw) => { if (!place.facts.has(key)) place.facts.set(key, norm(raw)); };
+            const t = place.text;
+            for (const m of t.matchAll(/(?<![\d:])([01]?\d|2[0-4]):([0-5]\d)(?![\d:])/g)) note(`${two(+m[1])}:${m[2]}`, m[0]);
+            for (const m of t.matchAll(/(오전|오후|낮|저녁|밤|아침|새벽)?\s*(\d{1,2})시(?!간|대|즌|리즈)(?:\s*(\d{1,2})분|\s*(반))?/g)) {
+                let hour = +m[2];
+                if (hour > 24) continue;
+                if (/오후|저녁|밤/.test(m[1] || '') && hour < 12) hour += 12;
+                note(`${two(hour)}:${m[4] ? '30' : two(+(m[3] || 0))}`, m[0]);
+            }
+            for (const m of t.matchAll(/(?<![\d,.])(\d{1,3}(?:,\d{3})+|\d{4,})\s*원/g)) note(`${m[1].replace(/,/g, '')}원`, m[0]);
+            for (const m of t.matchAll(/(?<![\d,.])(\d+(?:\.\d+)?)\s*만\s*원/g)) note(`${Math.round(parseFloat(m[1]) * 10000)}원`, m[0]);
+            for (const m of t.matchAll(/[₩$€£]\s?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?/g)) note(m[0].replace(/[\s,]/g, ''), m[0]);
+            for (const m of t.matchAll(/(?<!\d)(0\d{1,2}|1[5-9]\d{2})[-. )]\s?(\d{3,4})(?:[-. ](\d{4}))?(?!\d)/g)) {
+                if (m[1].startsWith('0') && !m[3]) continue;
+                note(`tel ${m[1]}${m[2]}${m[3] || ''}`, m[0]);
+            }
+            for (const m of t.matchAll(/(\d{1,2})월\s*(\d{1,2})일/g)) note(`${+m[1]}/${+m[2]}`, m[0]);
+            for (const m of t.matchAll(/(?<!\d)20\d{2}[.\-/]\s?(\d{1,2})[.\-/]\s?(\d{1,2})(?!\d)/g)) note(`${+m[1]}/${+m[2]}`, m[0]);
+        }
+    })();
+    const factPlaces = new Map();
+    for (const place of copyPlaces) for (const key of place.facts.keys()) {
+        if (!factPlaces.has(key)) factPlaces.set(key, []);
+        factPlaces.get(key).push(place);
+    }
+    check('repeated-fact', () => {
+        // The same label copied into several items ("9월 18일 출시" on four product tiles, a
+        // carousel's cloned price) is one statement. Then four places, or three where the fact
+        // travels with other facts: the same hours and price in three sentences is one fact said three times.
+        const matches = [...factPlaces].map(([key, list]) => [key, list.filter((place, i) =>
+            list.findIndex(other => other.text === place.text) === i)])
+            .filter(([, list]) => list.length >= 4 ||
+                (list.length === 3 && list.filter(place => place.facts.size > 1).length >= 2))
+            .map(([key, list]) => sample(list[0].el, {fact: list[0].facts.get(key), places: list.length,
+                texts: list.map(place => place.text.slice(0, 80))}, list[0].facts.get(key)));
+        add('repeated-fact', 'warn', 'The same time, price, date or phone number is stated in several places (a table or list counts as one place; links, buttons and the footer are not counted).', matches);
+    });
+    check('restated-block', () => {
+        const matches = copyPlaces.filter(place => place.facts.size >= 3).map(place => {
+            const shown = [...place.facts.keys()].filter(key => factPlaces.get(key).some(other => other.index < place.index));
+            return {place, shown};
+        }).filter(({place, shown}) => shown.length / place.facts.size >= 0.8)
+            .map(({place, shown}) => sample(place.el, {facts: place.facts.size,
+                alreadyShown: shown.map(key => place.facts.get(key))}, place.text));
+        add('restated-block', 'warn', 'A block repeats facts the page already showed above; keep one of the two.', matches);
+    });
+    check('repeated-sentence', () => {
+        const sentences = [];
+        for (const place of copyPlaces) {
+            if (place.list) continue;
+            for (const text of place.text.split(/(?<=[.!?。])\s+|(?<=[다요죠])\.\s*/)) {
+                // A truncated preview ("Prevent duplicate ride requests on poor...") is UI, not a sentence.
+                if (/(?:\.\.\.|…)$/.test(text)) continue;
+                const key = text.replace(/[^\p{L}\p{N}]/gu, '').toLowerCase();
+                // A Hangul syllable carries about two Latin letters; short labels are not statements.
+                const weight = key.replace(/[가-힯]/g, '..').length;
+                if (weight < 24) continue;
+                const grams = new Map();
+                for (let i = 0; i < key.length - 1; i++) grams.set(key.slice(i, i + 2), (grams.get(key.slice(i, i + 2)) || 0) + 1);
+                sentences.push({place, text, key, grams, weight, numbers: new Set(key.match(/\d+/g) || [])});
+            }
+        }
+        const dice = (a, b) => {
+            let shared = 0, total = 0;
+            for (const [gram, n] of a.grams) { shared += Math.min(n, b.grams.get(gram) || 0); total += n; }
+            for (const n of b.grams.values()) total += n;
+            return total ? 2 * shared / total : 0;
+        };
+        const matches = [];
+        for (let i = 0; i < sentences.length; i++) for (let j = i + 1; j < sentences.length; j++) {
+            const a = sentences[i], b = sentences[j];
+            if (a.place === b.place) continue;
+            // "M4 탑재" and "M5 탑재" are two products; one number set inside the other is the same statement.
+            const within = (x, y) => [...x.numbers].every(n => y.numbers.has(n));
+            if (!within(a, b) && !within(b, a)) continue;
+            // A short line reused verbatim is a repeated component (a promo strip, a card); a paraphrase is a repeat.
+            if (a.key === b.key && a.weight < 40) continue;
+            const [short, long] = a.key.length <= b.key.length ? [a.key, b.key] : [b.key, a.key];
+            const score = long.includes(short) && short.length >= long.length * 0.6 ? 1 : dice(a, b);
+            if (score >= 0.75) matches.push(sample(b.place.el, {similarity: Math.round(score * 100) / 100,
+                earlier: a.text.slice(0, 120), earlierSelector: selector(a.place.el)}, b.text));
+        }
+        add('repeated-sentence', 'warn', 'A sentence says again what an earlier sentence on the page already said.', matches);
+    });
+    check('meta-copy', () => {
+        // Copy about the page, its tables or the reader's questions instead of about the offer.
+        const pattern = /이 (?:페이지|사이트|화면)(?:에|에서|에는|에서는|의 내용)|이곳에 (?:적|정리|모아)|(?:아래|위)(?:의)? (?:표|목록|내용|항목|안내)|(?:표|목록)에 (?:모두 |다 )?(?:적었|정리했|담았|적어 두)|칸 안의|적지 않았|다루지 않았|궁금하실 (?:겁니다|거예요|텐데)|궁금하시(?:죠|지요)|\bon this page\b|\bthis page (?:lists|shows|explains|covers)\b|\b(?:table|list) (?:below|above)\b|\bbelow you(?:'ll| will) find\b|\byou might be wondering\b|\bscroll down\b/i;
+        const every = new RegExp(pattern.source, 'gi');
+        const matches = copyPlaces.filter(place => !place.el.closest('nav') && pattern.test(place.text))
+            .map(place => sample(place.el, {phrases: [...new Set(place.text.match(every))]}, place.text));
+        add('meta-copy', 'warn', 'Copy describes the page, its tables or the reader\'s questions instead of the offer.', matches);
     });
     check('emoji-icons', () => {
         const matches = elements.filter(el => el.matches('h1, h2, h3, h4, h5, h6, nav a, [role="navigation"] a, li') &&
