@@ -56,6 +56,20 @@ describe('CssFontsEmitterHandler', () => {
     expect(result.data.css).toContain('font-display: fallback;');
     expect(result.data.css).toContain('unicode-range: U+0000-00FF;');
   });
+  it('imports a stylesheet for a sliced distribution and keeps files authoritative', () => {
+    const result = new CssFontsEmitterHandler().execute(buildState({ fonts: {
+      sliced: { ...entry, stylesheet: './assets/fonts/fonts.css' },
+      sliced2: { ...entry, family: 'Sliced Two', stylesheet: './assets/fonts/fonts.css' },
+      both: { ...entry, family: 'Both', stylesheet: './ignored.css', files: [{ path: './both.woff2' }] },
+    } }));
+    expect(result.success).toBe(true);
+    if (!result.success) return;
+    expect(result.data.css).toStartWith('@import url("./assets/fonts/fonts.css");\n');
+    expect(result.data.css.match(/@import/g)).toHaveLength(1);
+    expect(result.data.css).not.toContain('ignored.css');
+    expect(result.data.css).toContain('--font-sliced:');
+    expect(result.data.css).toContain('src: url("./both.woff2") format("woff2");');
+  });
   it('emits one face per file with inferred formats, defaults, and font variables', () => {
     const result = new CssFontsEmitterHandler().execute(buildState({ fonts: {
       text: { ...entry, fallback: 'system-ui, sans-serif', files: [

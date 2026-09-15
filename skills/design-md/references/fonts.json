@@ -1,0 +1,1234 @@
+{
+  "version": 1,
+  "checked": "2026-09-15",
+  "policy": "Only entries with webEmbedding true may ship as web fonts. modify false means use the distributed files unchanged: no subsetting and no format conversion. Re-check the license page before a client delivery and copy the verified date into DESIGN.md. Google Fonts entries are verified at fetch time from the license file in google/fonts.",
+  "fonts": [
+    {
+      "id": "pretendard",
+      "family": "Pretendard",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "sans",
+      "roles": [
+        "text",
+        "display"
+      ],
+      "weights": [
+        100,
+        200,
+        300,
+        400,
+        500,
+        600,
+        700,
+        800,
+        900
+      ],
+      "license": "OFL-1.1",
+      "licenseUrl": "https://github.com/orioncactus/pretendard/blob/main/LICENSE",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "evidence": "Pretendard는 SIL 오픈 폰트 라이선스로 배포됩니다. (README)",
+      "source": {
+        "kind": "npm",
+        "package": "pretendard",
+        "version": "1.3.9",
+        "web": "dist/web/static/woff2/Pretendard-{Weight}.woff2",
+        "desktop": "dist/public/static/Pretendard-{Weight}.otf",
+        "licenseFile": "dist/LICENSE.txt"
+      },
+      "note": "The most common Korean UI face. Fine for text; as the only family on a page it reads as a template."
+    },
+    {
+      "id": "suit",
+      "family": "SUIT",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "sans",
+      "roles": [
+        "text",
+        "display"
+      ],
+      "weights": [
+        100,
+        200,
+        300,
+        400,
+        500,
+        600,
+        700,
+        800,
+        900
+      ],
+      "license": "OFL-1.1",
+      "licenseUrl": "https://github.com/sun-typeface/SUIT/blob/main/LICENSE",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "evidence": "GitHub license: OFL-1.1",
+      "source": {
+        "kind": "zip",
+        "url": "https://github.com/sun-typeface/SUIT/releases/download/v2.0.5/SUIT-otf.zip",
+        "web": {
+          "url": "https://github.com/sun-typeface/SUIT/releases/download/v2.0.5/SUIT-woff2.zip",
+          "glob": "*.woff2"
+        },
+        "desktop": "*.otf",
+        "licenseUrlRaw": "https://raw.githubusercontent.com/sun-typeface/SUIT/main/LICENSE"
+      },
+      "note": "Tighter and more geometric than Pretendard; good for numbers and short UI text."
+    },
+    {
+      "id": "spoqa-han-sans-neo",
+      "family": "Spoqa Han Sans Neo",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "sans",
+      "roles": [
+        "text"
+      ],
+      "weights": [
+        100,
+        300,
+        400,
+        500,
+        700
+      ],
+      "license": "OFL-1.1",
+      "licenseUrl": "https://github.com/spoqa/spoqa-han-sans/blob/main/Original/SpoqaHanSansNeo/LICENSE_OFL.txt",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "evidence": "GitHub license: OFL-1.1",
+      "source": {
+        "kind": "raw",
+        "base": "https://raw.githubusercontent.com/spoqa/spoqa-han-sans/main/Original/SpoqaHanSansNeo/",
+        "files": [
+          "SpoqaHanSansNeo-Thin.otf",
+          "SpoqaHanSansNeo-Light.otf",
+          "SpoqaHanSansNeo-Regular.otf",
+          "SpoqaHanSansNeo-Medium.otf",
+          "SpoqaHanSansNeo-Bold.otf"
+        ],
+        "licenseFile": "LICENSE_OFL.txt"
+      },
+      "note": "Calm, slightly wide text face with good Latin. Web files are converted from OTF (allowed by OFL)."
+    },
+    {
+      "id": "gmarket-sans",
+      "family": "Gmarket Sans",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "sans",
+      "roles": [
+        "display"
+      ],
+      "weights": [
+        300,
+        500,
+        700
+      ],
+      "license": "OFL-1.1",
+      "licenseUrl": "https://corp.gmarket.com/fonts/",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "evidence": "자유롭게 수정하고 재배포 하실 수 있습니다. Gmarket Sans는 'SIL Open Font License'에 따라 (공식 페이지)",
+      "source": {
+        "kind": "zip",
+        "url": "https://corp.gmarket.com/fonts/GmarketSansOTF.zip",
+        "desktop": "*.otf",
+        "weightMap": {
+          "GmarketSansLight": 300,
+          "GmarketSansMedium": 500,
+          "GmarketSansBold": 700
+        }
+      },
+      "note": "The default e-commerce banner headline. Use deliberately; a Gmarket Bold headline over Pretendard is the most common detail-page look."
+    },
+    {
+      "id": "paperlogy",
+      "family": "Paperlogy",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "sans",
+      "roles": [
+        "display",
+        "text"
+      ],
+      "weights": [
+        100,
+        200,
+        300,
+        400,
+        500,
+        600,
+        700,
+        800,
+        900
+      ],
+      "license": "OFL-1.1",
+      "licenseUrl": "https://freesentation.blog/paperlogyfont",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "evidence": "SIL 오픈폰트라이선스(OFL)에 따라 글꼴 단독 판매 또는 글꼴 라이선스 변경을 제외한 모든 상업적 행위 및 수정, 재배포가 가능합니다. (공식 페이지)",
+      "source": {
+        "kind": "zip",
+        "url": "https://github.com/Freesentation/paperlogy/raw/refs/heads/main/Paperlogy-1.001.zip",
+        "desktop": "*.ttf",
+        "licenseUrlRaw": "https://raw.githubusercontent.com/Freesentation/paperlogy/main/OFL%20license.txt"
+      },
+      "note": "Gmarket-like Hangul with Montserrat-like Latin in nine weights; one family can carry display and text by weight contrast."
+    },
+    {
+      "id": "s-core-dream",
+      "family": "S-Core Dream",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "sans",
+      "roles": [
+        "display",
+        "text"
+      ],
+      "weights": [
+        100,
+        200,
+        300,
+        400,
+        500,
+        600,
+        700,
+        800,
+        900
+      ],
+      "license": "S-Core Font License (custom, free commercial)",
+      "licenseUrl": "https://s-core.co.kr/company/font2/",
+      "webEmbedding": true,
+      "modify": false,
+      "verified": "2026-09-15",
+      "evidence": "상업적 사용이 가능하도록 무료로 제공되며 자유롭게 재배포 하실 수 있습니다. 어떠한 이유로도 폰트 파일을 수정, 판매할 수 없으며 배포되는 파일 형태 그대로 사용해야 합니다. (공식 페이지)",
+      "source": {
+        "kind": "zip",
+        "url": "https://s-core.co.kr/wp-content/uploads/2020/03/S-Core_Dream_OTF.zip",
+        "desktop": "*.otf",
+        "weightMap": {
+          "SCDream1": 100,
+          "SCDream2": 200,
+          "SCDream3": 300,
+          "SCDream4": 400,
+          "SCDream5": 500,
+          "SCDream6": 600,
+          "SCDream7": 700,
+          "SCDream8": 800,
+          "SCDream9": 900
+        }
+      },
+      "note": "Serve the distributed OTF files unchanged (large). No subsetting or woff2 conversion. Keep the copyright notice with the files. Each weight is a separate family in the files (S-Core Dream 1 Thin ... 9 Black) and SCDream4 declares weight 200, so the catalog weightMap sets CSS weights."
+    },
+    {
+      "id": "jalnan-2",
+      "family": "Jalnan 2",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "display",
+      "roles": [
+        "display"
+      ],
+      "weights": [
+        400
+      ],
+      "license": "GC COMPANY Font License (custom, free commercial)",
+      "licenseUrl": "https://www.goodchoice.kr/font",
+      "webEmbedding": true,
+      "modify": false,
+      "verified": "2026-09-15",
+      "evidence": "Jalnan 2 is provided free of charge to all users, including individual and corporate users, and can be freely modified and redistributed. (font name table, license description) 다만 배포처 공식 가이드(https://drive.google.com/file/d/1TFGKe-QLRnx2IHpJO3ZH3pVUYjQwMx7L/view)는 수정본 재배포를 금지한다고 적혀 있어 확인하지 못했다. 충돌이 해소될 때까지 수정 금지로 둔다.",
+      "source": {
+        "kind": "zip",
+        "url": "https://framerusercontent.com/assets/uK4mTd9JFejCoAXNZyXHV6glsI.zip",
+        "desktop": "*.otf"
+      },
+      "note": "Heavy rounded poster face (여기어때 잘난체). The separate license guide PDF on the official page was not read; the embedded license text grants modification and redistribution."
+    },
+    {
+      "id": "jalnan-gothic",
+      "family": "Jalnan Gothic",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "display",
+      "roles": [
+        "display"
+      ],
+      "weights": [
+        400
+      ],
+      "license": "GC COMPANY Font License (custom, free commercial)",
+      "licenseUrl": "https://www.goodchoice.kr/font",
+      "webEmbedding": true,
+      "modify": false,
+      "verified": "2026-09-15",
+      "evidence": "Jalnan Gothic is provided free of charge to all users, including individual and corporate users, and can be freely modified and redistributed. (font name table) 다만 배포처 공식 가이드(https://drive.google.com/file/d/1TFGKe-QLRnx2IHpJO3ZH3pVUYjQwMx7L/view)는 수정본 재배포를 금지한다고 적혀 있어 확인하지 못했다. 충돌이 해소될 때까지 수정 금지로 둔다.",
+      "source": {
+        "kind": "zip",
+        "url": "https://framerusercontent.com/assets/nDlVcfwW7fVXLTZeKX4WdTVY1Yk.zip",
+        "desktop": "*.otf"
+      },
+      "note": "Straighter sibling of Jalnan 2 (잘난체 고딕)."
+    },
+    {
+      "id": "maruburi",
+      "family": "MaruBuri",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "serif",
+      "roles": [
+        "display",
+        "text"
+      ],
+      "weights": [
+        200,
+        300,
+        400,
+        600,
+        700
+      ],
+      "license": "OFL-1.1 (Naver)",
+      "licenseUrl": "https://hangeul.naver.com/font",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "evidence": "네이버 마루 부리 글꼴과 클로바 나눔손글씨도 나눔 글꼴과 같은 오픈 라이선스 글꼴로 동일한 저작권 규정을 적용받습니다. 자유롭게 수정, 재배포하실 수 있습니다. (공식 페이지)",
+      "source": {
+        "kind": "zip",
+        "url": "https://hangeul.naver.com/hangeul_static/webfont/zips/maruburi.zip",
+        "desktop": "*.otf",
+        "weightMap": {
+          "MaruBuri-ExtraLight": 200,
+          "MaruBuri-Light": 300,
+          "MaruBuri-Regular": 400,
+          "MaruBuri-SemiBold": 600,
+          "MaruBuri-Bold": 700
+        }
+      },
+      "note": "Contemporary Korean serif with a calm, editorial color. Strong for headings over a sans text face."
+    },
+    {
+      "id": "nanum-square-neo",
+      "family": "NanumSquare Neo",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "sans",
+      "roles": [
+        "display",
+        "text"
+      ],
+      "weights": [
+        300,
+        400,
+        700,
+        800,
+        900
+      ],
+      "license": "OFL-1.1 (Naver)",
+      "licenseUrl": "https://hangeul.naver.com/font",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "evidence": "네이버 글꼴은 개인 및 기업 사용자를 포함한 모든 사용자에게 무료로 제공되며 글꼴 자체를 유료로 판매하는 것을 제외한 상업적인 사용이 가능합니다. (공식 페이지)",
+      "source": {
+        "kind": "zip",
+        "url": "https://hangeul.naver.com/hangeul_static/webfont/zips/nanum-all_new.zip",
+        "desktop": "*NanumSquareNeo*.ttf",
+        "weightMap": {
+          "NanumSquareNeo-aLt": 300,
+          "NanumSquareNeo-bRg": 400,
+          "NanumSquareNeo-cBd": 700,
+          "NanumSquareNeo-dEb": 800,
+          "NanumSquareNeo-eHv": 900
+        }
+      },
+      "note": "Squared, sturdy sans common in Korean presentation and detail pages. The zip holds every Nanum family (large download)."
+    },
+    {
+      "id": "kopub-world",
+      "family": "KoPubWorld Batang",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "serif",
+      "roles": [
+        "text",
+        "display"
+      ],
+      "weights": [
+        300,
+        500,
+        700
+      ],
+      "license": "KoPub Font License (custom)",
+      "licenseUrl": "https://www.kopus.org/biz-electronic-font2/",
+      "webEmbedding": false,
+      "modify": false,
+      "verified": "2026-09-15",
+      "evidence": "서체를 서버에 탑재한 후 웹서비스 및 프로그램 내 서비스 등 임베이딩하여 사용할 경우 별도의 승인이 필요합니다. 사전승인 없이 폰트를 수정, 변형하는 것은 불가 (공식 페이지)",
+      "source": {
+        "kind": "manual",
+        "page": "https://www.kopus.org/biz-electronic-font2/",
+        "steps": "Register on the page, download, install for Photoshop."
+      },
+      "note": "Photoshop comps, images and print only unless the web embedding approval is obtained in writing."
+    },
+    {
+      "id": "noto-sans-kr",
+      "family": "Noto Sans KR",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "sans",
+      "roles": [
+        "text"
+      ],
+      "weights": [
+        100,
+        200,
+        300,
+        400,
+        500,
+        600,
+        700,
+        800,
+        900
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Neutral, very common; better as a text face under a characterful display face."
+    },
+    {
+      "id": "noto-serif-kr",
+      "family": "Noto Serif KR",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "serif",
+      "roles": [
+        "text",
+        "display"
+      ],
+      "weights": [
+        200,
+        300,
+        400,
+        500,
+        600,
+        700,
+        800,
+        900
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Wide weight range serif; heavy weights make book-like headings."
+    },
+    {
+      "id": "gowun-batang",
+      "family": "Gowun Batang",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "serif",
+      "roles": [
+        "display",
+        "text"
+      ],
+      "weights": [
+        400,
+        700
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Soft, handwritten-leaning Batang; literary and warm."
+    },
+    {
+      "id": "gowun-dodum",
+      "family": "Gowun Dodum",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "sans",
+      "roles": [
+        "text"
+      ],
+      "weights": [
+        400
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Gentle humanist sans; single weight."
+    },
+    {
+      "id": "hahmlet",
+      "family": "Hahmlet",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "serif",
+      "roles": [
+        "display",
+        "text"
+      ],
+      "weights": [
+        100,
+        200,
+        300,
+        400,
+        500,
+        600,
+        700,
+        800,
+        900
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Contemporary high-contrast Korean serif with a variable weight axis."
+    },
+    {
+      "id": "ibm-plex-sans-kr",
+      "family": "IBM Plex Sans KR",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "sans",
+      "roles": [
+        "text"
+      ],
+      "weights": [
+        100,
+        200,
+        300,
+        400,
+        500,
+        600,
+        700
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Engineered, slightly mechanical text face; pairs with specification-sheet directions."
+    },
+    {
+      "id": "black-han-sans",
+      "family": "Black Han Sans",
+      "script": [
+        "ko"
+      ],
+      "category": "display",
+      "roles": [
+        "display"
+      ],
+      "weights": [
+        400
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Very heavy condensed poster Hangul."
+    },
+    {
+      "id": "do-hyeon",
+      "family": "Do Hyeon",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "display",
+      "roles": [
+        "display"
+      ],
+      "weights": [
+        400
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "배민 도현체. Painted-sign character; retro shop signage."
+    },
+    {
+      "id": "jua",
+      "family": "Jua",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "display",
+      "roles": [
+        "display"
+      ],
+      "weights": [
+        400
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "배민 주아체. Rounded, friendly, food and neighborhood tone."
+    },
+    {
+      "id": "song-myung",
+      "family": "Song Myung",
+      "script": [
+        "ko"
+      ],
+      "category": "serif",
+      "roles": [
+        "display"
+      ],
+      "weights": [
+        400
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Traditional brush-derived Myeongjo; newspaper and heritage headings."
+    },
+    {
+      "id": "nanum-myeongjo",
+      "family": "Nanum Myeongjo",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "serif",
+      "roles": [
+        "display",
+        "text"
+      ],
+      "weights": [
+        400,
+        700,
+        800
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Classic Korean Myeongjo; newsprint and document directions."
+    },
+    {
+      "id": "gothic-a1",
+      "family": "Gothic A1",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "sans",
+      "roles": [
+        "text",
+        "display"
+      ],
+      "weights": [
+        100,
+        200,
+        300,
+        400,
+        500,
+        600,
+        700,
+        800,
+        900
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Plain Gothic with nine weights; neutral alternative to Pretendard."
+    },
+    {
+      "id": "orbit",
+      "family": "Orbit",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "sans",
+      "roles": [
+        "display"
+      ],
+      "weights": [
+        400
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Squarish, technical display face."
+    },
+    {
+      "id": "gasoek-one",
+      "family": "Gasoek One",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "display",
+      "roles": [
+        "display"
+      ],
+      "weights": [
+        400
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Ultra-heavy experimental display; poster use only."
+    },
+    {
+      "id": "bagel-fat-one",
+      "family": "Bagel Fat One",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "display",
+      "roles": [
+        "display"
+      ],
+      "weights": [
+        400
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Inflated rounded display; playful food and kids tone."
+    },
+    {
+      "id": "diphylleia",
+      "family": "Diphylleia",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "serif",
+      "roles": [
+        "display"
+      ],
+      "weights": [
+        400
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Delicate high-contrast serif for short headings."
+    },
+    {
+      "id": "asta-sans",
+      "family": "Asta Sans",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "sans",
+      "roles": [
+        "text",
+        "display"
+      ],
+      "weights": [
+        300,
+        400,
+        500,
+        600,
+        700,
+        800
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Mobility-brand sans (42dot) with a variable weight axis."
+    },
+    {
+      "id": "gaegu",
+      "family": "Gaegu",
+      "script": [
+        "ko",
+        "latin"
+      ],
+      "category": "handwriting",
+      "roles": [
+        "accent"
+      ],
+      "weights": [
+        300,
+        400,
+        700
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Handwriting accent for notes and captions only."
+    },
+    {
+      "id": "bebas-neue",
+      "family": "Bebas Neue",
+      "script": [
+        "latin"
+      ],
+      "category": "display",
+      "roles": [
+        "accent",
+        "numerals"
+      ],
+      "weights": [
+        400
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Condensed caps for numbers, dates and Latin labels."
+    },
+    {
+      "id": "libre-baskerville",
+      "family": "Libre Baskerville",
+      "script": [
+        "latin"
+      ],
+      "category": "serif",
+      "roles": [
+        "accent"
+      ],
+      "weights": [
+        400,
+        700
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Bookish Latin serif accent."
+    },
+    {
+      "id": "fraunces",
+      "family": "Fraunces",
+      "script": [
+        "latin"
+      ],
+      "category": "serif",
+      "roles": [
+        "accent",
+        "display"
+      ],
+      "weights": [
+        100,
+        200,
+        300,
+        400,
+        500,
+        600,
+        700,
+        800,
+        900
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Soft old-style display serif with optical size and wonk axes."
+    },
+    {
+      "id": "newsreader",
+      "family": "Newsreader",
+      "script": [
+        "latin"
+      ],
+      "category": "serif",
+      "roles": [
+        "accent",
+        "text"
+      ],
+      "weights": [
+        200,
+        300,
+        400,
+        500,
+        600,
+        700,
+        800
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Newspaper Latin with optical sizes."
+    },
+    {
+      "id": "archivo",
+      "family": "Archivo",
+      "script": [
+        "latin"
+      ],
+      "category": "sans",
+      "roles": [
+        "accent",
+        "numerals"
+      ],
+      "weights": [
+        100,
+        200,
+        300,
+        400,
+        500,
+        600,
+        700,
+        800,
+        900
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Grotesque with a width axis; condensed widths suit catalog numbers."
+    },
+    {
+      "id": "schibsted-grotesk",
+      "family": "Schibsted Grotesk",
+      "script": [
+        "latin"
+      ],
+      "category": "sans",
+      "roles": [
+        "accent"
+      ],
+      "weights": [
+        400,
+        500,
+        600,
+        700,
+        800,
+        900
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Newsroom grotesque; less overused than Inter-like faces."
+    },
+    {
+      "id": "ibm-plex-mono",
+      "family": "IBM Plex Mono",
+      "script": [
+        "latin"
+      ],
+      "category": "mono",
+      "roles": [
+        "accent",
+        "numerals"
+      ],
+      "weights": [
+        100,
+        200,
+        300,
+        400,
+        500,
+        600,
+        700
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Specification numbers, codes and tables."
+    },
+    {
+      "id": "young-serif",
+      "family": "Young Serif",
+      "script": [
+        "latin"
+      ],
+      "category": "serif",
+      "roles": [
+        "accent"
+      ],
+      "weights": [
+        400
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Chunky 1970s-flavored Latin serif."
+    },
+    {
+      "id": "anton",
+      "family": "Anton",
+      "script": [
+        "latin"
+      ],
+      "category": "display",
+      "roles": [
+        "accent",
+        "numerals"
+      ],
+      "weights": [
+        400
+      ],
+      "license": "google",
+      "webEmbedding": true,
+      "modify": true,
+      "verified": "2026-09-15",
+      "source": {
+        "kind": "google"
+      },
+      "note": "Tall condensed poster Latin."
+    }
+  ],
+  "pairings": [
+    {
+      "id": "editorial-serif",
+      "label": "마루부리 제목 + Pretendard 본문",
+      "display": "maruburi",
+      "text": "pretendard",
+      "worlds": [
+        "연구소 연차보고서",
+        "건축 사무소 포트폴리오",
+        "스위스 박물관 전시 도록"
+      ]
+    },
+    {
+      "id": "literary-batang",
+      "label": "고운바탕 제목 + 스포카 한 산스 네오 본문",
+      "display": "gowun-batang",
+      "text": "spoqa-han-sans-neo",
+      "worlds": [
+        "독립 서점 월간 소식지",
+        "호텔 룸서비스 메뉴"
+      ]
+    },
+    {
+      "id": "newsprint",
+      "label": "나눔명조 제목 + Noto Sans KR 본문",
+      "display": "nanum-myeongjo",
+      "text": "noto-sans-kr",
+      "accent": "newsreader",
+      "worlds": [
+        "동네 신문 전면 광고"
+      ]
+    },
+    {
+      "id": "catalog-numerals",
+      "label": "Noto Serif KR 본문 + Bebas Neue 숫자",
+      "display": "noto-serif-kr",
+      "text": "noto-serif-kr",
+      "accent": "bebas-neue",
+      "worlds": [
+        "스위스 박물관 전시 도록",
+        "90년대 음반 속지"
+      ]
+    },
+    {
+      "id": "bold-poster",
+      "label": "여기어때 잘난체 제목 + Pretendard 본문",
+      "display": "jalnan-2",
+      "text": "pretendard",
+      "worlds": [
+        "공연 포스터",
+        "시장 가게 간판"
+      ]
+    },
+    {
+      "id": "retro-sign",
+      "label": "배민 도현체 제목 + Noto Sans KR 본문",
+      "display": "do-hyeon",
+      "text": "noto-sans-kr",
+      "worlds": [
+        "시장 가게 간판",
+        "80년대 일본 가전 카탈로그"
+      ]
+    },
+    {
+      "id": "spec-sheet",
+      "label": "에스코어 드림 굵은 두께 + 가는 두께",
+      "display": "s-core-dream",
+      "text": "s-core-dream",
+      "accent": "ibm-plex-mono",
+      "worlds": [
+        "공구 회사 제품 사양서",
+        "항공사 기내 안전 안내문"
+      ]
+    },
+    {
+      "id": "single-family-contrast",
+      "label": "페이퍼로지 굵은 두께 + 보통",
+      "display": "paperlogy",
+      "text": "paperlogy",
+      "worlds": [
+        "연구소 연차보고서",
+        "공구 회사 제품 사양서"
+      ]
+    },
+    {
+      "id": "commerce-clear",
+      "label": "G마켓 산스 제목 + SUIT 본문",
+      "display": "gmarket-sans",
+      "text": "suit",
+      "worlds": [
+        "80년대 일본 가전 카탈로그",
+        "시장 가게 간판"
+      ]
+    },
+    {
+      "id": "contemporary-serif",
+      "label": "함렛 제목 + IBM Plex Sans KR 본문",
+      "display": "hahmlet",
+      "text": "ibm-plex-sans-kr",
+      "worlds": [
+        "건축 사무소 포트폴리오",
+        "호텔 룸서비스 메뉴"
+      ]
+    },
+    {
+      "id": "square-sturdy",
+      "label": "나눔스퀘어 네오 굵은 두께 + Gothic A1 본문",
+      "display": "nanum-square-neo",
+      "text": "gothic-a1",
+      "accent": "archivo",
+      "worlds": [
+        "항공사 기내 안전 안내문",
+        "등산로 안내 표지판"
+      ]
+    },
+    {
+      "id": "friendly-rounded",
+      "label": "배민 주아체 제목 + 고운돋움 본문",
+      "display": "jua",
+      "text": "gowun-dodum",
+      "worlds": [
+        "시장 가게 간판",
+        "등산로 안내 표지판"
+      ]
+    }
+  ]
+}

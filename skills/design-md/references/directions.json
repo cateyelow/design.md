@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "rule": {"recent": 5, "minDifferentAxes": 5, "core": ["narrative", "layout", "image"], "minDifferentCore": 2},
+  "axes": [
+    {"key": "narrative", "label": "서사", "options": [
+      "실제 작업 예시 → 과정 → 요금 → 조건",
+      "가격표 먼저 → 사양 → 후기",
+      "한 사람의 하루 속에 제품이 등장 → 조건",
+      "자주 받는 질문 순서대로 전체 구성",
+      "비교표 → 선택 안내 → 신청",
+      "만드는 과정 → 결과물 → 주문 방법"
+    ]},
+    {"key": "world", "label": "레퍼런스 세계", "options": [
+      "스위스 박물관 전시 도록", "공구 회사 제품 사양서", "독립 서점 월간 소식지", "90년대 음반 속지",
+      "동네 신문 전면 광고", "항공사 기내 안전 안내문", "건축 사무소 포트폴리오", "호텔 룸서비스 메뉴",
+      "연구소 연차보고서", "80년대 일본 가전 카탈로그", "등산로 안내 표지판", "시장 가게 간판", "공연 포스터"
+    ]},
+    {"key": "layout", "label": "레이아웃 원형", "options": [
+      "편집 그리드 (본문과 캡션이 비대칭)", "포스터형 (첫 화면은 대형 타이포 하나)", "카탈로그형 (상품과 서비스를 목록으로)",
+      "문서형 (왼쪽 목차 고정, 설명서처럼)", "스플릿 스크린 (한쪽 고정 이미지)", "표 중심 (가격과 사양 비교가 주인공)",
+      "사진 에세이 (전폭 사진과 짧은 문장 교차)", "전단형 (짧은 스크롤, 정보 밀집)"
+    ]},
+    {"key": "type", "label": "폰트 조합", "source": "fonts.json#pairings"},
+    {"key": "color", "label": "색 전략", "options": [
+      "흰 종이와 검정 잉크, 인주색 한 점", "브랜드 사진에서 뽑은 두 색만", "짙은 단색 배경 한 가지와 흰 글자 (빛 번짐 없음)",
+      "리소그래프 2도 인쇄 (겹친 곳이 셋째 색)", "무채색과 고채도 한 색 (강조에만)", "브랜드 기존 색 그대로, 새 색 금지"
+    ]},
+    {"key": "image", "label": "이미지 처리", "options": [
+      "필름 그레인 실사", "흑백 다큐 사진", "제품 누끼와 실제 그림자 합성", "사진 조각과 종이 질감 콜라주",
+      "이미지 없음, 타이포와 표만", "하프톤 단색 처리 사진"
+    ]},
+    {"key": "density", "label": "밀도", "options": ["넓은 여백", "보통", "표와 목록 위주의 밀집"]},
+    {"key": "motion", "label": "모션", "options": ["없음", "호버와 포커스만", "스크롤 연동 딱 한 곳"]},
+    {"key": "tone", "label": "카피 톤", "options": ["설명서처럼 담백", "동네 사장님 말투", "전문가 사양서", "편지체"]}
+  ],
+  "conflicts": [
+    [["image", "이미지 없음, 타이포와 표만"], ["layout", "사진 에세이 (전폭 사진과 짧은 문장 교차)"]],
+    [["image", "이미지 없음, 타이포와 표만"], ["layout", "스플릿 스크린 (한쪽 고정 이미지)"]],
+    [["density", "넓은 여백"], ["layout", "전단형 (짧은 스크롤, 정보 밀집)"]],
+    [["density", "표와 목록 위주의 밀집"], ["layout", "포스터형 (첫 화면은 대형 타이포 하나)"]],
+    [["density", "표와 목록 위주의 밀집"], ["layout", "사진 에세이 (전폭 사진과 짧은 문장 교차)"]],
+    [["color", "리소그래프 2도 인쇄 (겹친 곳이 셋째 색)"], ["image", "필름 그레인 실사"]],
+    [["tone", "편지체"], ["layout", "표 중심 (가격과 사양 비교가 주인공)"]],
+    [["narrative", "한 사람의 하루 속에 제품이 등장 → 조건"], ["layout", "표 중심 (가격과 사양 비교가 주인공)"]],
+    [["narrative", "비교표 → 선택 안내 → 신청"], ["image", "사진 조각과 종이 질감 콜라주"]],
+    [["narrative", "가격표 먼저 → 사양 → 후기"], ["tone", "편지체"]],
+    [["type", "retro-sign"], ["world", "연구소 연차보고서"]],
+    [["type", "friendly-rounded"], ["world", "연구소 연차보고서"]],
+    [["type", "bold-poster"], ["density", "넓은 여백"]]
+  ],
+  "imagePrompts": {
+    "필름 그레인 실사": "35mm film camera, Kodak Portra 400, one clear light source with a named direction and time of day, visible grain, subject off-center, real clutter at the edges",
+    "흑백 다큐 사진": "black and white documentary photograph, Tri-X 400, available light, candid moment, deep shadows, no posing",
+    "제품 누끼와 실제 그림자 합성": "background plate only for compositing a real product photo: plain seamless paper, single soft box from the upper left, empty space where the product will sit, no product",
+    "사진 조각과 종이 질감 콜라주": "raw photographs of real textures and objects meant to be cut out later; plain background, strong silhouettes, no stylization",
+    "이미지 없음, 타이포와 표만": null,
+    "하프톤 단색 처리 사진": "high contrast photograph with simple large shapes that will survive a one-color halftone treatment"
+  }
+}

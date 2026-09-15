@@ -37,7 +37,9 @@ Both executable names, `design.md` and `designmd`, are retained.
 - `export --format css-fonts` emits one `@font-face` block per file followed by
   `:root` font variables. It preserves file paths and skips fonts with
   `webEmbedding: false`, emitting a CSS comment for each. Malformed font metadata
-  produces lint findings and is skipped by the exporter.
+  produces lint findings and is skipped by the exporter. An entry that carries
+  `stylesheet` and no `files`, as a distribution sliced by unicode range does,
+  emits one `@import` ahead of every other rule.
 
 See the generated [specification](docs/spec.md) for field definitions and
 [LANDING_FONTS.md](packages/cli/src/linter/fixtures/LANDING_FONTS.md) for a complete

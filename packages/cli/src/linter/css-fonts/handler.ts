@@ -24,6 +24,7 @@ const EXTENSION_FORMATS = new Map([
 export class CssFontsEmitterHandler implements CssFontsEmitterSpec {
   execute(state: DesignSystemState): CssFontsEmitterResult {
     try {
+      const imports = new Set<string>();
       const blocks: string[] = [];
       const variables: string[] = [];
       for (const [token, raw] of Object.entries(isRecord(state.fonts) ? state.fonts : {})) {
@@ -49,10 +50,15 @@ export class CssFontsEmitterHandler implements CssFontsEmitterSpec {
             '}',
           ].join('\n'));
         }
+        // A sliced distribution (one file per unicode range) ships its own stylesheet; import it instead of listing files.
+        if (entry.stylesheet !== undefined && (entry.files ?? []).length === 0) {
+          imports.add(`@import url("${entry.stylesheet.replace(/["\\\n\r\f]/g, '')}");`);
+        }
         variables.push(`  --font-${token}: ${family}${entry.fallback ? `, ${entry.fallback}` : ''};`);
       }
       blocks.push([':root {', ...variables, '}'].join('\n'));
-      return { success: true, data: { css: blocks.join('\n\n') + '\n' } };
+      // @import must precede every other rule in a stylesheet.
+      return { success: true, data: { css: [...imports, ...blocks].join('\n\n') + '\n' } };
     } catch (error) {
       return { success: false, error: { code: 'CSS_FONTS_ERROR', message: error instanceof Error ? error.message : String(error) } };
     }

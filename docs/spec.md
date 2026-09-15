@@ -99,11 +99,12 @@ Hex notation (`#RRGGBB`) remains the recommended default for simplicity and broa
 - `webEmbedding` (boolean, required): whether the license allows website `@font-face` embedding.
 - `verified` (string, required): real calendar date in `YYYY-MM-DD` when the license was checked.
 - `files` (list, optional): objects with required `path: string`; optional `weight: number | string` (e.g. `400` or `100 900`), `style: normal | italic`, and `format: woff2 | woff | truetype | opentype`.
+- `stylesheet` (string, optional): URL or path of a stylesheet that already declares the faces, used when a distribution ships one file per unicode range.
 - `display` (optional): `auto | block | swap | fallback | optional`.
 - `unicodeRange` (string, optional): CSS unicode range.
 - `fallback` (string, optional): CSS fallback stack.
 
-Malformed values are reported as findings. Missing or invalid verification dates are warnings. The `css-fonts` exporter emits one `@font-face` per file, defaults to weight `400`, style `normal`, and display `swap`, and infers formats from `.woff2`, `.woff`, `.ttf`, and `.otf` extensions. An explicit format overrides inference; an unknown extension without a format emits only `url()`. Paths are preserved. Entries with `webEmbedding: false` produce a skip comment and no CSS variable; malformed entries are skipped. Other valid entries produce `--font-<token>` variables in `:root`.
+Malformed values are reported as findings. Missing or invalid verification dates are warnings. The `css-fonts` exporter emits one `@font-face` per file, defaults to weight `400`, style `normal`, and display `swap`, and infers formats from `.woff2`, `.woff`, `.ttf`, and `.otf` extensions. An explicit format overrides inference; an unknown extension without a format emits only `url()`. Paths are preserved. An entry with `stylesheet` and no `files` emits an `@import` before every other rule. Entries with `webEmbedding: false` produce a skip comment and no CSS variable; malformed entries are skipped. Other valid entries produce `--font-<token>` variables in `:root`.
 
 **Direction**: The optional top-level `direction` key is a map of strings recording per-project art direction.
 

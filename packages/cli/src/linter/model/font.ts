@@ -29,6 +29,7 @@ export const FontEntrySchema = z.object({
   webEmbedding: z.boolean(),
   licenseUrl: z.string().optional(),
   files: z.array(FontFileSchema).optional(),
+  stylesheet: z.string().min(1).optional(),
   display: z.enum(['auto', 'block', 'swap', 'fallback', 'optional']).optional(),
   unicodeRange: z.string().optional(),
   fallback: z.string().optional(),
