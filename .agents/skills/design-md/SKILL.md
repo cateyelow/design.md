@@ -1,6 +1,6 @@
 ---
 name: design-md
-description: Build or redesign a landing page or marketing site that should read as designed by a person, and read, create or update a project's DESIGN.md. Chooses a per-project art direction against a ledger, typesets with verified commercial-use fonts shared by Photoshop comps and the web build, generates imagery with Codex image generation, and audits the rendered page for AI-generated design tells.
+description: Build or redesign a landing page or marketing site that should read as designed by a person, and read, create or update a project's DESIGN.md. Chooses a per-project art direction against a ledger, typesets with verified commercial-use fonts, generates imagery with Codex image generation, and audits the rendered page for AI-generated design tells.
 ---
 
 # Landing pages that do not look generated
@@ -35,36 +35,37 @@ python scripts/designmd.py lint DESIGN.md
 
 This runs the landing fork of the design.md CLI and reports which CLI ran. Lint errors must be 0 (an Adobe Fonts or KoPub face set to ship on the web is an error). Act on `generic-typeface`, `ai-palette` and `direction-record` warnings, or record the reason in `direction`.
 
-## 4. Fonts: the same files in Photoshop and on the web
+## 4. Fonts
 
 Pick a pairing from [references/fonts.json](references/fonts.json); the chosen pairing id is the `type` axis. Then:
 
 ```text
 python scripts/fonts.py fetch <display-id> <text-id> --dest <project>/assets/fonts --weights 400,700
-python scripts/fonts.py install <ids> --dest <project>/assets/fonts        # for Photoshop
-python scripts/fonts.py ps-names <ids> --dest <project>/assets/fonts       # PostScript names for the comp
 python scripts/fonts.py design-block <ids> --dest <project>/assets/fonts --prefix <path used by the site>
 ```
 
-`fetch` downloads from the official distribution, keeps the license text, records SHA-256 in `fonts.lock.json` and writes `fonts.css`. Never self-host files synced by Adobe Fonts or any face with `webEmbedding: false`; they may appear only rasterized inside images. Serve `modify: false` faces exactly as distributed. A user-supplied paid font needs a license that covers web embedding, recorded in `fonts`. Read [references/fonts.md](references/fonts.md) before choosing faces for a client site, adding a font to the catalog, or converting Photoshop type settings to CSS.
+`fetch` downloads from the official distribution, keeps the license text, records SHA-256 in `fonts.lock.json` and writes `fonts.css`. Never self-host files synced by Adobe Fonts or any face with `webEmbedding: false`; they may appear only rasterized inside images. Serve `modify: false` faces exactly as distributed. A user-supplied paid font needs a license that covers web embedding, recorded in `fonts`. Read [references/fonts.md](references/fonts.md) before choosing faces for a client site or adding a font to the catalog.
 
 ## 5. Images
 
-Generate backgrounds, scenes, textures and mood with Codex image generation. Do not generate the product's exact form, real UI, the people presented as customers, staff or doctors, before/after results, or any evidence; use originals for those. Prompt first, `-i` references last, no text inside images. Read [references/imagery.md](references/imagery.md) for the command, prompt skeletons per image treatment, the role of each reference image, the Photoshop post-processing pass and the advertising and labeling limits.
+Generate backgrounds, scenes, textures and mood with Codex image generation. Do not generate the product's exact form, real UI, the people presented as customers, staff or doctors, before/after results, or any evidence; use originals for those. Prompt first, `-i` references last, no text inside images. Read [references/imagery.md](references/imagery.md) for the command, prompt skeletons per image treatment, the role of each reference image, the retouching pass and the advertising and labeling limits.
 
-## 6. Comp before code
+## 6. Design in HTML
 
-Build a desktop (1440 wide) and a mobile (390 wide) comp with the real fonts and processed images:
+Design in the browser, not in a mock-up tool: the page is the design. Before writing markup, name the structural idea in one sentence ("a technical data sheet with a fixed clause index and marginal notes"). If the sections could be reordered without loss, there is no idea yet, and the page will fall back to hero, three cards, testimonials, CTA.
+
+Build the whole page with the real fonts (`fonts.css`, or `designmd.py export --format css-fonts`), the real material and the processed images, then look at it:
 
 ```text
-python scripts/photoshop_comp.py comps/desktop.json --restart
+python -m http.server 8000 --bind 127.0.0.1        # in the site folder
+python scripts/shot.py http://127.0.0.1:8000/ --widths 1440,390 --out shots
 ```
 
-The script typesets text layers with PostScript names, crops images to their boxes, adds grain when asked and saves a layered PSD plus PNG. It stops before creating a document when Photoshop lacks a font, and `--restart` restarts Photoshop only when it has no open documents. Without Photoshop (or off Windows) build a static HTML comp with the same `fonts.css` and screenshot it. Look at the comps and fix direction problems now. A person may refine the PSD; re-export the PNG and treat it as the reference.
+Look at both screenshots at full size every round, fix what is wrong, shoot again. Three or four rounds is normal. What to look for is in [references/craft.md](references/craft.md): the structural idea, type detail, the spacing scale, where the world shows up, and the default shapes to refuse.
 
-## 7. Implement
+## 7. Craft pass
 
-Give the implementer the brief, the material, DESIGN.md and the comp PNGs. Section order follows `direction.narrative`; adding a section the comp lacks needs a reason. Use `fonts.css` (or `designmd.py export --format css-fonts`) and the token export through the project's existing stack, with `font-synthesis: none`. Keep the Korean copy free of em/en dashes and spaced hyphen connectors, and keep one speech level.
+The first render is the average version of the idea. Spend a round on the details a person would bother with and a machine skips: optical alignment of the first line, hanging punctuation, tabular figures in tables, a measure of 35 to 45 Korean characters, one deliberate crowded place and one empty one, section rhythm that changes with the content, captions and figure numbers, states for every interactive element. Take the ornaments from `direction.world`, never from a component library. Keep the Korean copy free of em/en dashes and spaced hyphen connectors, and keep one speech level.
 
 ## 8. Verify
 
@@ -72,7 +73,7 @@ Give the implementer the brief, the material, DESIGN.md and the comp PNGs. Secti
 python scripts/audit.py http://127.0.0.1:8000/ --widths 1440,390 --out <dir>
 ```
 
-Serve the page (`python -m http.server 8000 --bind 127.0.0.1` in the site folder); `file://` blocks preloaded fonts and adds false console errors. Resolve every error (`font-fallback`, `overflow-x`). Fix each warning or justify it from DESIGN.md; a skipped check is not a pass. Compare the screenshots with the comps and list the differences. Run the project's own checks and use the page in a real browser. For a substantial page, have the model that did not implement it review against the brief and DESIGN.md and report violations only. Designer polish skills may review spacing, type and motion, but a recorded direction choice is not a defect. Read [references/review.md](references/review.md) for the tells catalog, copy rewrites, cross-model review prompt and blind test.
+Serve the page (`python -m http.server 8000 --bind 127.0.0.1` in the site folder); `file://` blocks preloaded fonts and adds false console errors. Resolve every error (`font-fallback`, `overflow-x`). Fix each warning or justify it from DESIGN.md; a skipped check is not a pass. Run the project's own checks and use the page in a real browser. For a substantial page, have the model that did not implement it review against the brief and DESIGN.md and report violations only. Designer polish skills may review spacing, type and motion, but a recorded direction choice is not a defect. Read [references/review.md](references/review.md) for the tells catalog, copy rewrites, cross-model review prompt and blind test.
 
 ## 9. Record and report
 
@@ -80,11 +81,10 @@ Serve the page (`python -m http.server 8000 --bind 127.0.0.1` in the site folder
 python scripts/direction.py record --project "<name>" --pick direction.json --ledger ~/.claude/design-ledger.json
 ```
 
-Report the direction and why, fonts with license and verified date, which images are generated and which are original, audit counts including skipped checks, comp versus build differences, and what is still missing.
+Report the direction and why, fonts with license and verified date, which images are generated and which are original, audit counts including skipped checks, and what is still missing.
 
 ## Tool notes
 
 - The landing fork lives at https://github.com/cateyelow/design.md (branch `landing`). `designmd.py` looks for it in `$DESIGNMD_FORK`, `~/GitHub/design.md` and `C:/GitHub/design.md`; without it the upstream CLI runs and the fonts, direction and palette rules are missing. Setup: `git clone -b landing https://github.com/cateyelow/design.md` then `bun install` in `packages/cli`.
 - On Windows the `design.md` binary name collides with the Markdown file association; the scripts always call the dot-free `designmd` entry.
-- `photoshop_comp.py` uses Photoshop COM (Windows, pywin32). ExtendScript is ES3, so the spec is passed as a literal; the script never quits Photoshop while documents are open.
-- If Adobe Fonts already activates a family with the same PostScript name as an installed file, Photoshop may use the Adobe copy. Deactivate it in Creative Cloud so the comp and the site use the same file.
+- `shot.py` drives installed Chrome through Playwright, waits for `document.fonts.ready` and writes one full-page PNG per width. `audit.py` writes the same screenshots; `shot.py` is the fast loop while designing.

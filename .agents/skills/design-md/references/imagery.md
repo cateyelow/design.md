@@ -1,4 +1,4 @@
-# Images: Codex image generation and Photoshop
+# Images: Codex image generation and the retouching pass
 
 Read before generating or processing images for a page.
 
@@ -41,9 +41,9 @@ Per image treatment, start from `imagePrompts` in `directions.json`. Narrow foll
 
 Why generated images look generated: skin without pores, pixels without sensor noise, light without a source, identical catchlights, cut-out edges, perfect symmetry, garbled letters, a different light direction in every image on the page.
 
-## Photoshop pass
+## Retouching pass
 
-`photoshop_comp.py` handles cover cropping around a focus point and optional uniform grain when it assembles the comp. For final assets do the rest in Photoshop, by hand or by script:
+A raw generation is rarely the asset. Work the file in an image editor before it goes on the page; the steps below name Photoshop tools, and any editor with the same operations will do.
 
 | Step | How |
 |---|---|
@@ -52,8 +52,8 @@ Why generated images look generated: skin without pores, pixels without sensor n
 | Unify the set | Put all images of the page side by side; match exposure, white balance and black level. |
 | Grade into the palette | Curves or Color Lookup adjustment layers so photos sit inside the DESIGN.md colors; lower saturation slightly and hold highlights. |
 | Grain | Only when the image treatment calls for it, the same size on every image. Camera Raw grain around amount 15 to 25, size 20 to 30 is a starting point. Grain does not fix wrong structure. |
-| Crop per breakpoint | Separate desktop and mobile crops that follow the comp's image boxes; move the subject off center. |
-| Export | WebP or JPEG at twice the displayed size; keep the PSD. |
+| Crop per breakpoint | Separate desktop and mobile crops that fit the image boxes the page actually uses; move the subject off center. |
+| Export | WebP or JPEG at twice the displayed size; keep the layered original and the raw generation. |
 
 ## Provenance and advertising limits
 

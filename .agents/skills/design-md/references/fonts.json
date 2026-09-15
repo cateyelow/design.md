@@ -397,9 +397,9 @@
       "source": {
         "kind": "manual",
         "page": "https://www.kopus.org/biz-electronic-font2/",
-        "steps": "Register on the page, download, install for Photoshop."
+        "steps": "Register on the page, download, install locally for image work."
       },
-      "note": "Photoshop comps, images and print only unless the web embedding approval is obtained in writing."
+      "note": "Images and print only unless the web embedding approval is obtained in writing."
     },
     {
       "id": "noto-sans-kr",

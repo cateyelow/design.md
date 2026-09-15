@@ -31,7 +31,7 @@ References steer harder than prompts or skills, and a single reference produces 
 - Collect 3 to 5 references that represent different axes, and write what to take from each: "A: camera height and margin placement only", "B: type density only", "C: the distance to the subject in photos only".
 - Look beyond web galleries: books, exhibition catalogs, packaging, industry documents, signage, product manuals. [Minimal Gallery](https://minimal.gallery/) and [Awwwards](https://www.awwwards.com/) are useful for web craft, but their top pages are what everyone copies.
 - A search like "pro desktop app UI" on Pinterest suits productivity tools. Desktop tool screens optimize repeated work; a landing page has to persuade a first visitor, so borrow density and hierarchy, not the structure.
-- The final reference for implementation is the project's own comp (step 6), not the gallery images.
+- The final reference for implementation is the project's own rendered page (step 6), not the gallery images.
 
 ## getdesign.md and brand DESIGN.md files
 
@@ -39,6 +39,6 @@ References steer harder than prompts or skills, and a single reference produces 
 
 ## Prompting the layout
 
-Do not ask the model for "the best layout for this purpose": that returns the most common answer. Give it the brief's persuasion problem, the chosen narrative and layout archetype, the real material list, and the comp. Ask it to explain which section answers which doubt. During implementation, targeted checks keep it from drifting: "are padding and widths consistent with the spacing scale", "is any motion awkward or unrequested", "does the type hierarchy follow DESIGN.md". Frame review as differences from the comp and DESIGN.md, not as taste.
+Do not ask the model for "the best layout for this purpose": that returns the most common answer. Give it the brief's persuasion problem, the chosen narrative and layout archetype, and the real material list. Ask it to explain which section answers which doubt. During implementation, targeted checks keep it from drifting: "are padding and widths consistent with the spacing scale", "is any motion awkward or unrequested", "does the type hierarchy follow DESIGN.md". Frame review as differences from DESIGN.md and the structural idea, not as taste.
 
 Repeated polishing can erase intended character: wide margins and asymmetry get "balanced" back to the average. Write the reason for such choices in DESIGN.md so reviewers treat them as decisions.

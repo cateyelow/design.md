@@ -1,6 +1,6 @@
 # Fonts for landing pages
 
-Read before choosing faces for a client site, adding a catalog entry, or converting Photoshop type settings to CSS.
+Read before choosing faces for a client site, adding a catalog entry, or reusing a licensed face inside an image.
 
 ## Strategy
 
@@ -16,9 +16,9 @@ Read before choosing faces for a client site, adding a catalog entry, or convert
 
 | Situation | Rule |
 |---|---|
-| `webEmbedding: false` (KoPubWorld) | Photoshop comps, images and print only. `fonts.py fetch` skips web files and the fork lint reports an error if typography uses it. KoPub requires separate approval to embed on a server. |
+| `webEmbedding: false` (KoPubWorld) | Images and print only. `fonts.py fetch` skips web files and the fork lint reports an error if typography uses it. KoPub requires separate approval to embed on a server. |
 | `modify: false` (S-Core Dream) | Serve the distributed OTF/TTF unchanged: no subsetting, no woff2 conversion, keep the copyright notice. Expect larger files. |
-| Adobe Fonts (desktop sync) | Fine for Photoshop and for rasterized images (PNG, JPEG, PDF with embedded outlines). On the web only through an Adobe web project embed code; self-hosting the files is prohibited, and a client site needs the client's own Creative Cloud subscription. Do not ship them from `assets/fonts`. |
+| Adobe Fonts (desktop sync) | Fine for desktop apps and for rasterized images (PNG, JPEG, PDF with embedded outlines). On the web only through an Adobe web project embed code; self-hosting the files is prohibited, and a client site needs the client's own Creative Cloud subscription. Do not ship them from `assets/fonts`. |
 | Paid foundry fonts (Sandoll, Yoon and others) | Allowed only when the user supplies a license that covers web embedding for this site. Record license name, scope and date in DESIGN.md `fonts`. |
 | "Commercial free" wording | Does not by itself allow web embedding, subsetting, modification or redistribution. Read the license text; keep it next to the files. |
 | Sources that disagree (Jalnan) | The embedded license text permits modification while the official PDF guide forbids redistributing modified files. Until the distributor resolves it, the catalog keeps `modify: false` and the fetch serves the original OTF. |
@@ -36,19 +36,21 @@ Licenses change. `verified` is the date the license page was read; re-read it be
 Two things the fetch cannot fix for you:
 
 - **A distribution that ships no license text.** Several Korean archives (MaruBuri, NanumSquare Neo, Gmarket Sans, Jalnan, S-Core Dream) contain only font files. The fetch then writes `LICENSE-EVIDENCE.txt` with the quoted evidence and saves the license page as `LICENSE-PAGE.html`. For an OFL face, also put the upstream `OFL.txt` next to the files before you redistribute them; `source.licenseUrlRaw` downloads it when the project publishes one.
-- **A variable file.** `ps-names` marks it: Photoshop opens the default instance, so a comp at weight 700 needs the weight axis set by hand or a static file, while the web build uses the variable file's range. When an archive ships both, the fetch keeps the static files.
+- **A variable file.** `ps-names` marks it: a desktop app opens the default instance, so setting type at weight 700 there needs the weight axis moved by hand or a static file, while the web build uses the variable file's range. When an archive ships both, the fetch keeps the static files.
 
-## Same files in Photoshop and on the web
+## The same files on the desktop and on the web
+
+The page is built in HTML, so the web files are the ones that matter. The desktop files are for the work that cannot happen in a browser: type set inside a generated or retouched image, and any face whose license allows images but not web embedding.
 
 1. `fonts.py fetch` puts desktop files (`desktop/`) and web files (`web/`) from the same distribution side by side, with `fonts.lock.json` (URLs, SHA-256, license) and a combined `fonts.css`.
-2. `fonts.py install` copies the desktop files into the user font folder (Windows registry entry included). Photoshop reads fonts at launch; `photoshop_comp.py --restart` restarts it only when no document is open.
-3. If Adobe Fonts activates a family with the same PostScript name, deactivate it so Photoshop uses the installed file.
-4. `fonts.py ps-names` gives the PostScript names to put in the comp spec.
+2. `fonts.py install` copies the desktop files into the user font folder (Windows registry entry included). Editors read fonts at launch, so restart the app afterwards.
+3. If Adobe Fonts activates a family with the same PostScript name, deactivate it so the app uses the installed file.
+4. `fonts.py ps-names` gives the PostScript names the app expects, which often differ from the display name.
 
-Converting Photoshop settings to CSS (documents at 72 ppi, type units in pixels):
+When type settings arrive from a designer's file instead of from the browser (documents at 72 ppi, type units in pixels):
 
 - Tracking is in 1/1000 em: tracking `-20` is `letter-spacing: -0.02em`.
 - Leading in px divided by font size gives the unitless `line-height` (84 / 64 = 1.3125).
 - Paragraph box width in px becomes the column `max-width`; check line breaks in the browser because renderers differ.
 
-In the build use `font-synthesis: none` so the browser does not fake missing weights, preload only the display face's first-screen weight, take screenshots after `document.fonts.ready`, and confirm in DevTools Rendered Fonts (or `audit.py` `font-fallback`) that Hangul, numbers and punctuation did not fall back. Google Fonts entries arrive as unicode-range slices, so the browser downloads only the syllables a page uses. The HTML is the final reference; the comp sets direction and proportions.
+In the build use `font-synthesis: none` so the browser does not fake missing weights, preload only the display face's first-screen weight, take screenshots after `document.fonts.ready`, and confirm in DevTools Rendered Fonts (or `audit.py` `font-fallback`) that Hangul, numbers and punctuation did not fall back. Google Fonts entries arrive as unicode-range slices, so the browser downloads only the syllables a page uses. The rendered page is the reference; a handed-over file only sets direction and proportions.

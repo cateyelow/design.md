@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Fetch licensed fonts once and use the same files for Photoshop comps and the web build.
+"""Fetch licensed fonts once and use the same files for the web build and for image work.
 
     python fonts.py list [--role display|text|accent|numerals] [--script ko|latin] [--web-only]
     python fonts.py fetch <id> [<id> ...] --dest assets/fonts [--weights 400,700] [--no-web] [--no-desktop]
     python fonts.py install <id> [<id> ...] --dest assets/fonts     # desktop files into the user font folder
     python fonts.py design-block <id> [<id> ...] --dest assets/fonts [--prefix assets/fonts]
-    python fonts.py ps-names <id> [<id> ...] --dest assets/fonts     # PostScript names for photoshop_comp.py
+    python fonts.py ps-names <id> [<id> ...] --dest assets/fonts     # PostScript names for a desktop app
 
 The catalog is references/fonts.json. Only entries with webEmbedding true get web files. Entries with modify false
 are served exactly as distributed (no subsetting, no woff2 conversion). Every fetch writes <dest>/<id>/fonts.lock.json
@@ -332,7 +332,7 @@ def fetch(entry: dict, root: Path, wanted: set | None, web: bool, desktop: bool)
     if kind == 'manual':
         raise SystemExit(f'{entry["id"]}: manual source. {entry["source"].get("steps", "")} Page: {entry["source"]["page"]}')
     if web and not entry.get('webEmbedding'):
-        print(f'{entry["id"]}: webEmbedding is false, fetching desktop files only (Photoshop, images, print).', file=sys.stderr)
+        print(f'{entry["id"]}: webEmbedding is false, fetching desktop files only (images and print).', file=sys.stderr)
         web = False
     final = root / entry['id']
     # Download into a sibling folder and swap at the end: a failed refetch must not delete a working installation.
@@ -527,13 +527,13 @@ def main(argv=None) -> int:
     if args.command == 'install':
         for path in install(locks, args.dest):
             print(f'installed {path}')
-        print('Restart Photoshop if it was running so it lists the new fonts.')
+        print('Restart any editor that was running so it lists the new fonts.')
     elif args.command == 'design-block':
         print(design_block(locks, catalog, args.prefix or args.dest.as_posix()), end='')
     else:
         for lock in locks:
             for item in lock['desktop']:
-                note = ('\tvariable file: Photoshop opens the default instance, so set the weight axis by hand or use a '
+                note = ('\tvariable file: a desktop app opens the default instance, so set the weight axis by hand or use a '
                         'static file') if item.get('variable') else ''
                 print(f'{lock["id"]}\t{item["weight"]}\t{item["style"]}\t{item["postscript"]}{note}')
     return 0
