@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Take color values from outside the model: photos of the business, a published color dictionary, or the brand.
 
-    python palette.py extract photo.jpg [more.jpg ...] [--count 6] [--json]
+    python palette.py extract photo.jpg [https://upload.wikimedia.org/... ] [--count 6] [--json]
     python palette.py wada --draw 3 --project "동네 빵집" [--json]      # or --combo 214
     python palette.py roles --colors "#f9c1ce,#cab356,#2d3b2d" --source "catalog:wada#214" [--scheme light|dark|ground]
 
@@ -11,7 +11,9 @@ A Dictionary of Colour Combinations (348 combinations of 159 colors, 1933 to 193
 mattdesl/dictionary-of-colour-combinations. The file is downloaded at a pinned commit and cached rather than bundled,
 because that repository states a license for its code but not for the data. `roles` turns a handful of sourced colors
 into DESIGN.md tokens. It moves only lightness, and chroma when a color leaves the sRGB gamut, until text contrast
-holds, and prints each move so the source stays traceable. Record the printed `colorSource` in DESIGN.md `direction`.
+holds, and prints each move so the source stays traceable. Every source color that is not the ground also comes back
+as a section surface with the text color that reads on it. Record the printed `colorSource` in DESIGN.md `direction`.
+An image URL is downloaded to the cache only to measure it; the page never uses that image.
 """
 from __future__ import annotations
 
@@ -92,20 +94,55 @@ def contrast(one: dict, two: dict) -> float:
     return round((high + 0.05) / (low + 0.05), 2)
 
 
-def push_lightness(color: dict, against: dict, target: float) -> dict:
-    """Move lightness away from `against` until the contrast target holds or lightness runs out."""
+def push_lightness(color: dict, against: dict, target: float, floor: float = 4.5) -> dict:
+    """Move lightness away from `against` until `target` holds. Stop short of pure black or white once `floor` holds,
+    so the color keeps its hue; go all the way only when nothing else reaches the floor."""
     step = -1 if luminance(color) <= luminance(against) else 1
     current = color
-    while contrast(current, against) < target and 0 < current['L'] < 100:
+    while contrast(current, against) < target and 8 < current['L'] < 97:
         current = from_lab(current['L'] + step, color['a'], color['b'])
+    if contrast(current, against) < floor:
+        while contrast(current, against) < floor and 0 < current['L'] < 100:
+            current = from_lab(current['L'] + step, color['a'], color['b'])
     return current
+
+
+def surface_pairs(sources: list[dict], ground: dict, ink: dict) -> tuple[list[dict], list[dict]]:
+    """Each non-ground source color as a section surface with a text color that reads on it (4.5:1)."""
+    pairs, moves = [], []
+    for index, surface in enumerate(sources, 1):
+        options = sorted((ink, ground), key=lambda text: -contrast(text, surface))
+        text = options[0]
+        if contrast(text, surface) < 4.5:
+            moved = push_lightness(surface, text, 4.5, 4.5)
+            moves.append({'role': f'surface-{index}', 'from': surface['hex'], 'to': moved['hex'],
+                          'reason': f'text contrast {contrast(text, moved)}:1 on the surface'})
+            surface = moved
+        pairs.append({'surface': surface, 'on': text})
+    return pairs, moves
 
 
 # ------------------------------------------------------------------ sources
 
-def extract(paths: list[Path], count: int = 6) -> list[dict]:
+def fetch_image(url: str) -> Path:
+    suffix = Path(url.split('?')[0]).suffix.lower() or '.img'
+    path = CACHE / 'images' / (hashlib.sha256(url.encode('utf-8')).hexdigest()[:24] + suffix)
+    if not path.exists():
+        # Wikimedia and most CDNs refuse the default urllib agent.
+        request = urllib.request.Request(url, headers={'User-Agent': 'design-md-palette/1.0 (color measurement)'})
+        with urllib.request.urlopen(request, timeout=60) as response:
+            body = response.read()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(body)
+    return path
+
+
+def extract(paths: list, count: int = 6) -> list[dict]:
     from PIL import Image
 
+    names = ','.join(str(item) if str(item).startswith('http') else Path(item).name for item in paths)
+    kind = 'reference' if any(str(item).startswith('http') for item in paths) else 'photo'
+    paths = [fetch_image(str(item)) if str(item).startswith('http') else Path(item) for item in paths]
     weighted = []
     for path in paths:
         with Image.open(path) as source:
@@ -124,8 +161,7 @@ def extract(paths: list[Path], count: int = 6) -> list[dict]:
             break
         if group['share'] >= 0.004 and all(delta_e(group, other) >= 18 for other in chosen):
             chosen.append(group)
-    names = ','.join(path.name for path in paths)
-    return [{**color, 'share': round(color['share'], 4), 'source': f'photo:{names}#{index}'}
+    return [{**color, 'share': round(color['share'], 4), 'source': f'{kind}:{names}#{index}'}
             for index, color in enumerate(chosen, 1)]
 
 
@@ -195,10 +231,14 @@ def roles(colors: list[dict], scheme: str, source: str) -> dict:
     else:
         raise SystemExit(f'unknown scheme: {scheme}')
 
+    # The source colors that became neither the ground nor the ink stay available as section surfaces.
+    sources = list(pool)
     fixed = push_lightness(ink, ground, 7.0)
     if contrast(fixed, ground) < 4.5:
-        # The ink's own hue cannot reach body contrast on this ground; fall back to the lightness extreme.
-        fixed = from_lab(0 if luminance(ground) > 0.18 else 100, 0, 0)
+        # A mid-lightness ground can be out of reach in the ink's direction (white on a mid red tops out near
+        # 4.2:1); try the other source colors, which may sit on the other side of the ground.
+        tried = [push_lightness(color, ground, 7.0) for color in colors if color['hex'] != ground['hex']]
+        fixed = max([fixed, *tried], key=lambda color: contrast(color, ground))
     if fixed['hex'] != ink['hex']:
         moves.append({'role': 'ink', 'from': ink['hex'], 'to': fixed['hex'],
                       'reason': f'body text contrast {contrast(fixed, ground)}:1 on the ground'})
@@ -216,9 +256,14 @@ def roles(colors: list[dict], scheme: str, source: str) -> dict:
         tokens['second'] = pool[0]
 
     ratios = {f'{role}/ground': contrast(color, ground) for role, color in tokens.items() if role != 'ground'}
+    pairs, surface_moves = surface_pairs([color for color in sources if color['hex'] != ink['hex']], ground, ink)
+    for index, pair in enumerate(pairs, 1):
+        tokens[f'surface-{index}'] = pair['surface']
+        tokens[f'on-surface-{index}'] = pair['on']
+        ratios[f'on-surface-{index}/surface-{index}'] = contrast(pair['on'], pair['surface'])
     return {'colorSource': source, 'scheme': scheme,
             'tokens': {role: color['hex'] for role, color in tokens.items()},
-            'moves': moves, 'contrast': ratios}
+            'moves': moves + surface_moves, 'contrast': ratios}
 
 
 def design_snippet(result: dict) -> str:
@@ -235,7 +280,7 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest='command', required=True)
     p_extract = sub.add_parser('extract')
-    p_extract.add_argument('images', nargs='+', type=Path)
+    p_extract.add_argument('images', nargs='+', help='image files or http(s) image URLs')
     p_extract.add_argument('--count', type=int, default=6)
     p_extract.add_argument('--json', action='store_true')
     p_wada = sub.add_parser('wada')
@@ -252,7 +297,7 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
 
     if args.command == 'extract':
-        missing = [str(path) for path in args.images if not path.is_file()]
+        missing = [item for item in args.images if not item.startswith(('http://', 'https://')) and not Path(item).is_file()]
         if missing:
             print(f'not found: {", ".join(missing)}', file=sys.stderr)
             return 2
@@ -262,7 +307,8 @@ def main(argv=None) -> int:
         else:
             for item in swatches:
                 print(f"{item['hex']}  L{item['L']:5.1f} C{item['C']:5.1f} h{item['h']:5.1f}  area {item['share']:.3f}  {item['source']}")
-            print(f"\nroles --colors \"{','.join(item['hex'] for item in swatches)}\" --source \"photo:{','.join(p.name for p in args.images)}\"")
+            source = swatches[0]['source'].rsplit('#', 1)[0] if swatches else 'photo:'
+            print(f"\nroles --colors \"{','.join(item['hex'] for item in swatches)}\" --source \"{source}\"")
         return 0
 
     if args.command == 'wada':

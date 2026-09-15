@@ -16,7 +16,7 @@ Read when proposing or adjusting a direction, collecting references, or writing 
 | motion | how much moves | None, hover and focus only, one scroll-linked moment. |
 | tone | who seems to be speaking | Plain manual, neighborhood owner, expert specification, letter. |
 
-Brand-fixed choices are locked with `--lock axis=value`. The options are a curated list: add an option only after it produced a good page, remove options that keep producing weak pages, and add conflict rules when two options fight. The quality of the list is the quality of the output.
+Options that depend on material are listed under `requires` in directions.json (the business's own photos, a brand color guide) and are drawn only with `--have photos` or `--have brand`. Brand-fixed choices are locked with `--lock axis=value`; a lock is used even when the material flag is absent. The options are a curated list: add an option only after it produced a good page, remove options that keep producing weak pages, and add conflict rules when two options fight. The quality of the list is the quality of the output.
 
 ## Choosing among candidates
 

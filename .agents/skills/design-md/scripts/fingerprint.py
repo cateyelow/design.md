@@ -55,8 +55,11 @@ MEASURE_JS = r"""() => {
     const doc = document.documentElement;
     const pageWidth = Math.max(1, doc.scrollWidth), pageHeight = Math.max(1, doc.scrollHeight);
     let hairlines = 0, trackedSmall = 0, uppercase = 0, shadows = 0, gradients = 0, pills = 0;
-    let boxes = 0, rounded = 0, imageArea = 0;
+    let boxes = 0, rounded = 0, imageArea = 0, iconTiles = 0, cards = 0;
     const transparent = c => c === 'transparent' || /rgba\([^)]*,\s*0\)$/.test(c);
+    const framed = css => ['Top', 'Right', 'Bottom', 'Left'].every(side =>
+        css[`border${side}Style`] !== 'none' && (parseFloat(css[`border${side}Width`]) || 0) > 0);
+    const heading = 'h1, h2, h3, h4';
     for (const el of document.body.querySelectorAll('*')) {
         if (!isShown(el)) continue;
         const r = el.getBoundingClientRect();
@@ -82,6 +85,29 @@ MEASURE_JS = r"""() => {
             if (radius >= 8) rounded++;
         }
         if (painted && r.height <= 44 && r.width < 420 && radius >= r.height / 2 - 1 && text) pills++;
+        // A small icon in its own painted square next to or inside a heading, repeated down the page. The square
+        // is either the icon's parent or the svg itself with a background (measured on a generated page).
+        if (el.matches('svg, img') && r.width <= 72 && r.height <= 72) {
+            const own = !transparent(css.backgroundColor) || framed(css);
+            const tile = own ? el : el.parentElement;
+            if (tile && tile !== document.body) {
+                const tileBox = tile.getBoundingClientRect(), tileCss = getComputedStyle(tile);
+                const painted = own || (r.width <= 40 && (!transparent(tileCss.backgroundColor) || framed(tileCss)));
+                const beside = tile.closest(heading) ||
+                    [...(tile.parentElement ? tile.parentElement.children : [])].some(k => k !== tile && k.matches(heading));
+                if (painted && beside && tileBox.width <= 72 && tileBox.height <= 72) iconTiles++;
+            }
+        }
+        // A grid or wrapping row whose children are boxes, each painted or framed: the card grid.
+        if (css.display === 'grid' || css.display === 'inline-grid' || (css.display === 'flex' && css.flexWrap === 'wrap')) {
+            const boxed = [...el.children].filter(kid => {
+                if (!isShown(kid)) return false;
+                const kidBox = kid.getBoundingClientRect(), kidCss = getComputedStyle(kid);
+                const painted = !transparent(kidCss.backgroundColor) && kidCss.backgroundColor !== css.backgroundColor;
+                return (painted || framed(kidCss)) && kidBox.width >= 160 && kidBox.height >= 120;
+            });
+            if (boxed.length >= 3) cards += boxed.length;
+        }
         const media = el.matches('img, picture, video, canvas, iframe, object, embed') ||
             (el.matches('svg') && r.width * r.height >= 10000) || /url\(/.test(bg);
         if (media && !el.closest('picture:not(:scope)')) imageArea += r.width * r.height;
@@ -93,7 +119,7 @@ MEASURE_JS = r"""() => {
         chars, textColors, families, sizes, monoDecor,
         display: h1 ? firstFamily(getComputedStyle(h1).fontFamily) : '',
         pageWidth, pageHeight, hairlines, trackedSmall, uppercase, shadows, gradients, pills, boxes, rounded,
-        imageArea, headings: headings.length, numbered,
+        imageArea, iconTiles, cards, headings: headings.length, numbered,
         captions: document.querySelectorAll('figcaption').length + document.querySelectorAll('sup').length,
     };
 }"""
@@ -199,14 +225,22 @@ def summarize(raw: dict, swatches: list[dict]) -> dict:
             if (rgb := parse_css_color(value)) is not None]
     text_groups = group_colors(text, 8.0)
     ground = swatches[0] if swatches else lab((255, 255, 255)) | {'share': 1.0}
-    ink = text_groups[0] if text_groups else lab((0, 0, 0)) | {'share': 1.0}
+    # The ink is the body text color that stands off the ground, not simply the most frequent text color: a page
+    # with ground-colored text on light panels would otherwise report ink == ground (measured on a maroon page).
+    readable = [color for color in text_groups if color['share'] >= 0.1]
+    ink = (max(readable, key=lambda color: abs(color['L'] - ground['L'])) if readable
+           else text_groups[0] if text_groups else lab((0, 0, 0)) | {'share': 1.0})
 
     accents: list[dict] = []
+
+    def is_base(color):
+        return delta_e(color, ground) < 10 or delta_e(color, ink) < 10
+
     for swatch in swatches:
-        if swatch['C'] >= CHROMATIC and swatch['share'] >= 0.002:
+        if swatch['C'] >= CHROMATIC and swatch['share'] >= 0.002 and not is_base(swatch):
             accents.append({**swatch, 'pixelShare': round(swatch['share'], 4), 'textShare': 0.0})
     for color in text_groups:
-        if color['C'] < CHROMATIC or color['share'] < 0.01:
+        if color['C'] < CHROMATIC or color['share'] < 0.01 or is_base(color):
             continue
         match = next((item for item in accents if delta_e(item, color) < 15), None)
         if match:
@@ -257,6 +291,8 @@ def summarize(raw: dict, swatches: list[dict]) -> dict:
         'gradients': raw['gradients'],
         'captions': raw['captions'],
         'imageShare': round(min(1.0, raw['imageArea'] / (raw['pageWidth'] * raw['pageHeight'])), 3),
+        'iconTiles': raw.get('iconTiles', 0),
+        'cardGrid': raw.get('cards', 0),
         'pageHeight': raw['pageHeight'],
         'textChars': raw['chars'],
     }
@@ -278,21 +314,30 @@ def measure(page, timeout: float = 30) -> dict:
 # ------------------------------------------------------------------ judgments
 
 def tics(fp: dict) -> list[str]:
+    get = fp.get
     found = {
-        'hairline rules as the main structure': fp['hairlinesPer1000'] >= 4,
-        'small letter-spaced labels': fp['trackedSmall'] >= 3,
-        'numbered section headings': fp['headings'] >= 3 and fp['numberedHeadings'] >= 0.5,
-        'monospace used as decoration': fp['monoDecor'] >= 0.02,
-        'figure captions and footnote marks': fp['captions'] >= 2,
-        'uppercase labels': fp['uppercase'] >= 3,
+        'hairline rules as the main structure': get('hairlinesPer1000', 0) >= 4,
+        'small letter-spaced labels': get('trackedSmall', 0) >= 3,
+        'numbered section headings': get('headings', 0) >= 3 and get('numberedHeadings', 0) >= 0.5,
+        'monospace used as decoration': get('monoDecor', 0) >= 0.02,
+        'figure captions and footnote marks': get('captions', 0) >= 2,
+        'uppercase labels': get('uppercase', 0) >= 3,
+        'icon tiles beside headings': get('iconTiles', 0) >= 3,
+        'boxed card grid': get('cardGrid', 0) >= 4,
     }
     return [name for name, hit in found.items() if hit]
+
+
+EDITORIAL = {'hairline rules as the main structure', 'small letter-spaced labels', 'numbered section headings',
+             'monospace used as decoration', 'figure captions and footnote marks', 'uppercase labels'}
+DEVTOOL = {'monospace used as decoration', 'small letter-spaced labels', 'uppercase labels'}
 
 
 def generated_looks(fp: dict) -> list[dict]:
     """Looks a model reaches for when nothing outside it decides. Each needs its color condition and habits."""
     looks = []
-    ground, ink, hues, habits = fp['ground'], fp['ink'], fp['accentHues'], tics(fp)
+    ground, ink, hues = fp['ground'], fp['ink'], fp['accentHues']
+    habits = [habit for habit in tics(fp) if habit in EDITORIAL]
     restrained = fp['chromaticShare'] <= RESTRAINED and len(hues) <= 1
     # A tinted, warm paper rather than plain white: plain white with black type is every browser's default and
     # plenty of human editorial work (measured: kinfolk.com), so it is not evidence on its own.
@@ -302,7 +347,10 @@ def generated_looks(fp: dict) -> list[dict]:
         looks.append({'id': 'paper-ink-accent',
                       'label': 'off-white paper, near-black ink, at most one warm accent, editorial habits',
                       'evidence': {'ground': ground['hex'], 'ink': ink['hex'], 'accentHues': hues, 'habits': habits}})
-    if ground['L'] <= 20 and ground['C'] <= 12 and ink['L'] >= 80 and restrained and len(habits) >= 2:
+    # Dark product pages with rules and footnotes are ordinary human work (measured: apple.com/kr); the generated
+    # developer-tool look also carries monospace or letter-spaced labels.
+    if (ground['L'] <= 20 and ground['C'] <= 12 and ink['L'] >= 80 and restrained and len(habits) >= 2
+            and DEVTOOL & set(habits)):
         looks.append({'id': 'dark-mono-accent',
                       'label': 'near-black ground, light ink, one accent, developer-tool habits',
                       'evidence': {'ground': ground['hex'], 'ink': ink['hex'], 'accentHues': hues, 'habits': habits}})
@@ -314,6 +362,9 @@ def generated_looks(fp: dict) -> list[dict]:
         looks.append({'id': 'violet-gradient-saas', 'label': 'violet or indigo accent with gradients, pills or soft cards',
                       'evidence': {'violet': [item['hex'] for item in violet], 'gradients': fp['gradients'],
                                    'pills': fp['pills'], 'roundedShare': fp['roundedShare']}})
+    if fp.get('iconTiles', 0) >= 3 and fp.get('cardGrid', 0) >= 3:
+        looks.append({'id': 'icon-tile-cards', 'label': 'a small icon in a square beside each heading, on a grid of boxes',
+                      'evidence': {'iconTiles': fp['iconTiles'], 'cardGrid': fp['cardGrid']}})
     neon = [item for item in fp['accents'] if item['C'] >= 45 and item['L'] >= 50
             and (130 <= item['h'] <= 250 or 285 <= item['h'] <= 335)]
     if ground['L'] <= 18 and neon and (fp['gradients'] >= 1 or fp['shadows'] >= 3 or fp['monoDecor'] >= 0.02):
@@ -323,13 +374,15 @@ def generated_looks(fp: dict) -> list[dict]:
 
 
 FORM_KEYS = ('scale', 'imageShare', 'hairlinesPer1000', 'trackedSmall', 'numberedHeadings', 'monoDecor',
-             'roundedShare', 'shadows', 'gradients', 'pills', 'captions')
+             'roundedShare', 'shadows', 'gradients', 'pills', 'captions', 'iconTiles', 'cardGrid')
 FORM_CAPS = {'scale': 8, 'imageShare': 0.6, 'hairlinesPer1000': 12, 'trackedSmall': 12, 'numberedHeadings': 1,
-             'monoDecor': 0.1, 'roundedShare': 1, 'shadows': 12, 'gradients': 4, 'pills': 6, 'captions': 8}
+             'monoDecor': 0.1, 'roundedShare': 1, 'shadows': 12, 'gradients': 4, 'pills': 6, 'captions': 8,
+             'iconTiles': 8, 'cardGrid': 12}
 
 
 def form_distance(one: dict, two: dict) -> float:
-    squares = [(min(one[key], FORM_CAPS[key]) - min(two[key], FORM_CAPS[key])) / FORM_CAPS[key] for key in FORM_KEYS]
+    squares = [(min(one.get(key, 0), FORM_CAPS[key]) - min(two.get(key, 0), FORM_CAPS[key])) / FORM_CAPS[key]
+               for key in FORM_KEYS]
     return round(math.sqrt(sum(value * value for value in squares) / len(squares)) * 2, 3)
 
 

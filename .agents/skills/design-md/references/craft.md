@@ -38,7 +38,7 @@ Never type a hex value from taste. Take colors from the material (`palette.py ex
 - Set `font-variant-numeric: tabular-nums` wherever numbers stack, and align decimals in tables.
 - Check the last line of every headline at 390px for one orphaned syllable; fix with explicit `<span>` phrase units or a different break, not by shrinking the type.
 - `word-break: keep-all` for Korean, and check that no word breaks mid-syllable.
-- One family for running text. A second family earns its place only as display or as figures. Monospace is for code, not for labels.
+- One family for running text. A second family earns its place only as display or as figures. Monospace is for code, and for figures when the world really prints them that way (a receipt, a ticket machine, a terminal); it is not a label style.
 
 ## Space and rhythm
 
@@ -51,11 +51,11 @@ Never type a hex value from taste. Take colors from the material (`palette.py ex
 
 Ornament comes from `direction.world`, and different worlds have different ornaments. A home shopping caption has a saturated price bar, a countdown and a phone number set huge. A pharmacy envelope has a form grid, a dosage table and one clinical green. A snack bag back has a nutrition table, a barcode and a mascot. A subway sign has pictograms, line colors and a strict type size ladder. A bathhouse price board has painted tiles, a row per service and prices larger than names. Take the one or two devices that belong to this world and use them consistently; if the devices you reached for are rules, captions and numbered headings, check whether the world really has them or whether they came from habit.
 
-Refuse by default: pill badges above the headline, three equal icon cards, rounded card grids, gradient text, glassy panels, glows, a violet accent, an arrow glyph in every button, a circular seal drawn in CSS, fade-up-on-scroll everywhere, emoji as icons, a dark terminal block used as decoration, and the second generated look above.
+Refuse by default: pill badges above the headline, three equal icon cards, rounded card grids, gradient text, glassy panels, glows, a violet accent, an arrow glyph in every button, a circular seal drawn in CSS, fade-up-on-scroll everywhere, emoji as icons, a dark terminal block used as decoration, a small icon in its own square beside every heading, a grid of colored boxes with one topic each as the whole page structure, and the second generated look above.
 
 ## Detail that shows a person was there
 
-- Units in table headers, and the source of a number next to the number when the number has one.
+- Units in table headers, and the source of a number next to the number when the number has one. A line that says what the numbers in a table mean is content, not the decorative caption habit.
 - Hover, focus-visible, active and disabled states for everything clickable; focus rings that fit the design.
 - Images cropped per breakpoint, with the subject off center, and the same light direction across the set.
 - `prefers-reduced-motion` honoured, and motion only where it explains something.

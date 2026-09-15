@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Propose per-project art directions from curated axes and keep a ledger so sites stop looking alike.
 
-    python direction.py propose --project "동네 빵집 예약" [--count 3] [--lock color="브랜드 기존 색 그대로, 새 색 금지"]
-                                [--ledger design-ledger.json] [--json]
+    python direction.py propose --project "동네 빵집 예약" [--count 3] [--have photos,brand] [--round 0]
+                                [--lock color="브랜드 기존 색 그대로, 새 색 금지"] [--ledger ~/.claude/design-ledger.json] [--json]
     python direction.py record --project "동네 빵집 예약" --pick pick.json [--fingerprint audit/report.json]
                                [--ledger design-ledger.json]
     python direction.py check --pick pick.json [--ledger design-ledger.json]
@@ -12,6 +12,9 @@ most recent ledger entries, at least `minDifferentAxes` axes differ and at least
 axes (narrative, layout, image) differ, and when its reference world comes from a different group (print, places,
 screens, objects) than the last `familyWindow` entries. Worlds are drawn group first, so print matter no longer wins
 by sheer count. The draw only widens the options; a person or the brief chooses.
+
+Options that need material the project lacks are never drawn: `--have photos` allows options built on the business's
+own photos, `--have brand` the brand-color option; a lock always wins. `--round N` redraws from a later round.
 
 Labels do not prove two pages look different. `record --fingerprint` stores what the browser drew (see
 fingerprint.py), and `audit.py --ledger` compares the next page with it.
@@ -28,6 +31,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 REFERENCES = HERE.parent / 'references'
+LEDGER = Path.home() / '.claude' / 'design-ledger.json'
 
 
 def load_axes(references: Path = REFERENCES) -> tuple[dict, dict]:
@@ -82,14 +86,22 @@ def evaluate(pick: dict, ledger: list, directions: dict) -> dict:
     return {'passes': worst is None or worst['passes'], 'compared': len(recent), 'closest': worst}
 
 
-def draw_option(axis: dict, rng: random.Random) -> str:
+def unavailable(directions: dict, have: set) -> set:
+    return {option for need, listed in (directions.get('requires') or {}).items() if need not in have for option in listed}
+
+
+def draw_option(axis: dict, rng: random.Random, excluded: frozenset = frozenset()) -> str:
     groups = axis.get('groups')
     if isinstance(groups, dict) and groups:
-        return rng.choice(groups[rng.choice(sorted(groups))])
-    return rng.choice(axis['options'])
+        usable = {name: [o for o in options if o not in excluded] for name, options in groups.items()}
+        usable = {name: options for name, options in usable.items() if options}
+        return rng.choice(usable[rng.choice(sorted(usable))])
+    options = [option for option in axis['options'] if option not in excluded]
+    return rng.choice(options or axis['options'])
 
 
-def propose(project: str, count: int, locks: dict, ledger: list, directions: dict, max_rounds: int = 400) -> list:
+def propose(project: str, count: int, locks: dict, ledger: list, directions: dict, max_rounds: int = 400,
+            have: set | None = None, start: int = 0) -> list:
     unknown = [key for key in locks if key not in {axis['key'] for axis in directions['axes']}]
     if unknown:
         raise SystemExit(f'unknown axis in --lock: {", ".join(unknown)}')
@@ -102,11 +114,12 @@ def propose(project: str, count: int, locks: dict, ledger: list, directions: dic
         if value not in axis['options']:
             # A brand may already own a typeface or a layout that is not in the curated list; keep it verbatim.
             print(f'--lock {axis["key"]}: "{value}" is not a catalog option; recorded as written.', file=sys.stderr)
+    excluded = frozenset(unavailable(directions, have or set()))
     seen, candidates, fallback = set(), [], []
-    for round_no in range(max_rounds):
+    for round_no in range(start, start + max_rounds):
         seed = int(hashlib.sha256(f'{project}#{round_no}'.encode('utf-8')).hexdigest()[:16], 16)
         rng = random.Random(seed)
-        pick = {axis['key']: locks.get(axis['key']) or draw_option(axis, rng) for axis in directions['axes']}
+        pick = {axis['key']: locks.get(axis['key']) or draw_option(axis, rng, excluded) for axis in directions['axes']}
         key = json.dumps(pick, ensure_ascii=False, sort_keys=True)
         if key in seen or conflicting(pick, directions['conflicts']):
             continue
@@ -179,23 +192,30 @@ def main(argv=None) -> int:
     p_propose.add_argument('--project', required=True)
     p_propose.add_argument('--count', type=int, default=3)
     p_propose.add_argument('--lock', action='append', help='axis=value fixed by the brand or brief')
-    p_propose.add_argument('--ledger', type=Path, default=Path('design-ledger.json'))
+    p_propose.add_argument('--ledger', type=Path, default=LEDGER)
+    p_propose.add_argument('--have', default='', help='material the project has: photos, brand (comma-separated)')
+    p_propose.add_argument('--round', type=int, default=0, help='start drawing from this round (redraw)')
     p_propose.add_argument('--json', action='store_true')
     p_record = sub.add_parser('record')
     p_record.add_argument('--project', required=True)
     p_record.add_argument('--pick', type=Path, required=True, help='JSON file with the chosen axis values')
-    p_record.add_argument('--ledger', type=Path, default=Path('design-ledger.json'))
+    p_record.add_argument('--ledger', type=Path, default=LEDGER)
     p_record.add_argument('--note', default='')
     p_record.add_argument('--fingerprint', type=Path,
                           help='audit.py report.json or fingerprint.py --json output for the finished page')
     p_check = sub.add_parser('check')
     p_check.add_argument('--pick', type=Path, required=True)
-    p_check.add_argument('--ledger', type=Path, default=Path('design-ledger.json'))
+    p_check.add_argument('--ledger', type=Path, default=LEDGER)
     args = parser.parse_args(argv)
 
     directions, pairings = load_axes()
     if args.command == 'propose':
-        rows = propose(args.project, max(1, args.count), parse_locks(args.lock), read_ledger(args.ledger), directions)
+        have = {item.strip() for item in args.have.split(',') if item.strip()}
+        unknown = have - set(directions.get('requires') or {})
+        if unknown:
+            raise SystemExit(f'--have: unknown material {", ".join(sorted(unknown))}; use {", ".join(directions["requires"])}')
+        rows = propose(args.project, max(1, args.count), parse_locks(args.lock), read_ledger(args.ledger.expanduser()),
+                       directions, have=have, start=max(0, args.round))
         if args.json:
             print(json.dumps({'project': args.project, 'candidates': rows}, ensure_ascii=False, indent=2))
         else:
@@ -209,6 +229,7 @@ def main(argv=None) -> int:
     if missing:
         print(f'pick needs a non-empty value for: {", ".join(missing)}', file=sys.stderr)
         return 2
+    args.ledger = args.ledger.expanduser()
     ledger = read_ledger(args.ledger)
     verdict = evaluate(pick, ledger, directions)
     if args.command == 'check':

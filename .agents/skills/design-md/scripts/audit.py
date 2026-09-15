@@ -719,11 +719,13 @@ def run_audit(browser, target: str, widths=(1440, 390), out="./audit-out", timeo
                 diagnostics.append({"selector": None, "text": str(text)[:500], "computed": values})
 
             def on_console(message):
-                if message.type == "error":
+                location = urlsplit((message.location or {}).get("url") or "").path
+                if message.type == "error" and location != "/favicon.ico":
                     diagnostic(message.text, kind="console", location=message.location)
 
             def on_response(response):
-                if response.status >= 400:
+                # Chrome asks every served page for /favicon.ico; a missing one is not a page defect.
+                if response.status >= 400 and urlsplit(response.url).path != "/favicon.ico":
                     diagnostic(f"HTTP {response.status}: {response.url}",
                                kind="http", url=response.url, status=response.status)
 

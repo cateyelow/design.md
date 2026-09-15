@@ -20,10 +20,10 @@ Write the brief in a few lines: who arrives, what they doubt, the one action, an
 ## 2. Choose a direction
 
 ```text
-python scripts/direction.py propose --project "<name>" --count 3 --ledger ~/.claude/design-ledger.json [--lock color="브랜드 기존 색 그대로, 새 색 금지"]
+python scripts/direction.py propose --project "<name>" --count 3 --have photos,brand [--round 3] [--lock color="브랜드 기존 색 그대로, 새 색 금지"]
 ```
 
-Each candidate fixes nine axes: narrative, reference world, layout archetype, font pairing, color strategy, image treatment, density, motion and copy tone. Candidates are filtered against the most recent ledger entries so the new site differs in at least five axes and in two of narrative, layout and image, and its reference world comes from a different group (print, places, screens, objects) than the last two projects. Each color strategy names where its values come from; a strategy that needs photos you do not have is the wrong candidate. The draw only widens the options: choose the candidate that serves the brief and say why; redraw or adjust an axis that fights the brief. Show the candidates when the user is present and the choice is consequential. Read [references/direction.md](references/direction.md) for what each axis decides, how to use reference images and getdesign.md without cloning a brand, and how to write layout prompts.
+Each candidate fixes nine axes: narrative, reference world, layout archetype, font pairing, color strategy, image treatment, density, motion and copy tone. Candidates are filtered against the most recent ledger entries so the new site differs in at least five axes and in two of narrative, layout and image, and its reference world comes from a different group (print, places, screens, objects) than the last two projects. Each color strategy names where its values come from. `--have` lists the material step 1 actually found (`photos` of the business, a `brand` color guide); options built on missing material are not drawn, and `--round N` redraws. The ledger defaults to `~/.claude/design-ledger.json`. The draw only widens the options: choose the candidate that serves the brief and say why; redraw or adjust an axis that fights the brief. Show the candidates when the user is present and the choice is consequential. Read [references/direction.md](references/direction.md) for what each axis decides, how to use reference images and getdesign.md without cloning a brand, and how to write layout prompts.
 
 ## 3. Record the decision in DESIGN.md
 
@@ -37,7 +37,7 @@ python scripts/palette.py wada --draw 3 --project "<name>"            # then pic
 python scripts/palette.py roles --colors "<hex,hex,hex>" --source "<photo:... | catalog:wada#N | brand:...>" --scheme light|dark|ground
 ```
 
-`roles` moves only lightness until text contrast holds and prints every move. Copy its `colors` and `direction.colorSource` into DESIGN.md. Use the colors in the areas the source uses them; three sourced colors squeezed into one link color is the neutral page again.
+`roles` moves only lightness until text contrast holds and prints every move. It also returns each remaining source color as `surface-N` with the text color that reads on it (`on-surface-N`, at least 4.5:1), so section surfaces never need a guessed text color. Copy its `colors` and `direction.colorSource` into DESIGN.md. Use the colors in the areas the source uses them; three sourced colors squeezed into one link color is the neutral page again.
 
 ```text
 python scripts/designmd.py lint DESIGN.md
@@ -98,5 +98,5 @@ The fingerprint is what the next project is compared with, so record it from the
 - The landing fork lives at https://github.com/cateyelow/design.md (branch `landing`). `designmd.py` looks for it in `$DESIGNMD_FORK`, `~/GitHub/design.md` and `C:/GitHub/design.md`; without it the upstream CLI runs and the fonts, direction and palette rules are missing. Setup: `git clone -b landing https://github.com/cateyelow/design.md` then `bun install` in `packages/cli`.
 - On Windows the `design.md` binary name collides with the Markdown file association; the scripts always call the dot-free `designmd` entry.
 - `shot.py` drives installed Chrome through Playwright, waits for `document.fonts.ready` and writes one full-page PNG per width. `audit.py` writes the same screenshots; `shot.py` is the fast loop while designing.
-- `fingerprint.py <url>` measures a page on its own (ground, ink, accents, type scale, decoration habits, matched generated looks). Its thresholds were checked against 14 human-made sites (no false `paper-ink-accent`; Stripe and Linear match `violet-gradient-saas`, the look models copy from them) and two generated pilots (both matched); it is a detector of known looks, not proof that a page reads as human.
+- `fingerprint.py <url>` measures a page on its own (ground, ink, accents, type scale, decoration habits, matched generated looks). Its thresholds were checked against human-made sites (13 of 14 loaded in the last pass; Stripe and Linear match `violet-gradient-saas`, the look models copy from them; no other matches), two generated pilots (both `paper-ink-accent`) and three pages built by fresh agents with this skill (all far apart in ground and ink; one showed `icon-tile-cards`). It detects known looks; it is not proof that a page reads as human.
 - `palette.py wada` downloads Sanzo Wada's A Dictionary of Colour Combinations as digitized by mattdesl at a pinned commit with a SHA-256 check and caches it in `~/.cache/design-md`; the repository licenses its code but states no license for the data, so the file is not bundled.

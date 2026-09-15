@@ -13,12 +13,12 @@ Use originals, never generated: the product's exact form and packaging, real UI 
 Use the codex-cli skill's host-safe form and pin the model:
 
 ```bash
-codex exec -m gpt-6-astra -s danger-full-access -c mcp_servers='{}' \
+codex exec -m gpt-6-astra -s danger-full-access -c mcp_servers='{}' --skip-git-repo-check \
   "<prompt> ... Resize the result to 2400x1600 and save to <project>/images/raw/<name>-01.png" \
   -i <project>/images/ref/<real-photo>.jpg
 ```
 
-Prompt first and `-i` last: `-i` is variadic and swallows following arguments. The tool often returns a different size than requested, so ask for the resize and check the file. Generate several candidates for the same slot and choose the least polished one that fits.
+Prompt first and `-i` last: `-i` is variadic and swallows following arguments. `--skip-git-repo-check` is needed outside a git repository (otherwise codex exits 1 with "Not inside a trusted directory" and an empty stdout). The tool often returns a different size than requested, so ask for the resize and check the file. Generate several candidates for the same slot and choose the least polished one that fits.
 
 ## Prompt skeleton
 
@@ -29,8 +29,9 @@ Generate one photograph for a landing page section.
 Use: <background plate for a real product photo | scene | texture>.
 Subject: <the real place or object, based on the reference>.
 Reference A: use only <camera height and margin placement>. Reference B: use only <wall material and saturation>.
-Camera: <35mm film camera, 40mm lens, Kodak Portra 400, slight underexposure>.
-Light: <single window on the left, low warm sun around 4 pm, hard shadow falling right>.
+Camera: <the camera the treatment names: 35mm film, a phone, a studio flash>.
+Light: <one named source and direction; its color from the page: "flat noon light", "cold fluorescent tube", not a default warm sunset>.
+Color: <the DESIGN.md colors by hex and where they appear in the frame>.
 Framing: <subject on the right third, top edge cut off, empty wall on the left for the headline>.
 Texture: <visible film grain, faint dust, natural surface wear>.
 Do not include: any text, letters, logos, UI, faces looking at the camera, studio gradient backdrop,
@@ -50,6 +51,7 @@ A raw generation is rarely the asset. Work the file in an image editor before it
 | Clean defects | Clone stamp, patch and remove tool for hands, repeated patterns and letter-like marks. Generative fill reintroduces generated texture; keep it to small areas. |
 | Composite real products | Match shadow direction and color temperature to the plate; paint the contact shadow on a multiply layer. |
 | Unify the set | Put all images of the page side by side; match exposure, white balance and black level. |
+| Drawings on a colored ground | Scan or generate on white paper and place with `mix-blend-mode: multiply`; the paper disappears into the ground without cutting it out, and marker colors stay opaque. |
 | Grade into the palette | Curves or Color Lookup adjustment layers so photos sit inside the DESIGN.md colors. Match the saturation the direction calls for: a broadcast, packaging or market-sign world wants it high, and a default "slightly desaturated, warm" grade is the generated look again. |
 | Grain | Only when the image treatment calls for it, the same size on every image. Camera Raw grain around amount 15 to 25, size 20 to 30 is a starting point. Grain does not fix wrong structure. |
 | Crop per breakpoint | Separate desktop and mobile crops that fit the image boxes the page actually uses; move the subject off center. |

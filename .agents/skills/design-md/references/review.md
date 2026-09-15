@@ -43,7 +43,7 @@ Korean copy rules: no em/en dashes or spaced hyphen connectors between clauses (
 When Claude implemented, ask Codex (and the reverse) with the brief, DESIGN.md, the screenshots, the audit report and the URL or files:
 
 ```text
-Review this landing page against the brief, DESIGN.md and the comps. Report violations only, each with
+Review this landing page against the brief, DESIGN.md and the screenshots. Report violations only, each with
 location and evidence: sections or order that contradict direction.narrative, type or color outside the
 tokens, generated images used where originals are required, copy claims without material, differences
 from DESIGN.md, audit findings not fixed or justified. Do not propose a new visual direction.
