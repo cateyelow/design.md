@@ -65,10 +65,11 @@ are not included.
 
 `.agents/skills/design-md` holds the landing-page skill that drives this CLI:
 a direction ledger, a font catalog with license metadata and a fetcher, a
-Photoshop comp builder, and a rendered-page audit. Install it into a project
-with `npx skills add "cateyelow/design.md#landing"` (the branch suffix matters: the CLI clones the default branch otherwise); the scripts need Python 3.11 with
-fontTools, Playwright with installed Google Chrome for the audit, and (only for
-comps) Windows with Photoshop and pywin32.
+palette sampler that takes colors from outside the model, a rendered-page
+fingerprint, and a copy and design audit. Install it into a project with
+`npx skills add "cateyelow/design.md"`; the scripts need Python 3.11 with
+fontTools and Playwright with installed Google Chrome for the screenshots and
+the audit.
 
 ## Run from a clone
 
